@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,7 +23,6 @@ public class Main {
         // OverDuePay();
         // MaxSt();
 
-
     }
 
     /**
@@ -33,7 +33,6 @@ public class Main {
     private static void CityBuilding() {
         Scanner in = new Scanner(System.in);
         int n = in.nextInt();
-
         Long xMax = Long.MIN_VALUE;
         Long yMax = Long.MIN_VALUE;
         Long xMin = Long.MAX_VALUE;
@@ -248,7 +247,7 @@ public class Main {
      * 加班奖励，连续加班奖励，求N天加班期望。
      * 输入N天，加班情况为1 2 1 0 1 2，0不加班 1加班 2 50%的概率加班，连续加n天班则当天的奖励为n
      * 求这N天的加班奖励期望。
-     *
+     * <p>
      * 例子
      * 输入
      * 3
@@ -268,7 +267,7 @@ public class Main {
         int accumulate = 0;
         // 边界
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++){
+            for (int j = 0; j < n; j++) {
                 dp[i][j] = 0;
             }
         }
@@ -316,5 +315,47 @@ public class Main {
 
 }
 
+// 爬楼梯
+// 题目描述
+// 在你面前有一个n阶的楼梯，你一步只能上1阶或2阶。
+// 请问计算出你可以采用多少种不同的方式爬完这个楼梯。
+// 输入描述:
+// 一个正整数n(n<=100)，表示这个楼梯一共有多少阶
+// 输出描述:
+// 一个正整数，表示有多少种不同的方式爬完这个楼梯
+import java.util.*;
+import java.math.BigInteger;
 
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
 
+        BigInteger bigInteger = JumpFloor(n);
+        System.out.println(bigInteger.toString());
+    }
+
+    /**
+     * 如果不使用java.math.BigInteger无法处理溢出问题。
+     * @param n
+     * @return
+     */
+    public static BigInteger JumpFloor(int n) {
+        if (n < 1) {
+            return BigInteger.valueOf(0);
+        }
+        if (n == 1 || n == 2) {
+            return BigInteger.valueOf(n);
+        }
+        BigInteger f0 = BigInteger.valueOf(1);
+        BigInteger f1 = BigInteger.valueOf(1);
+        BigInteger f2 = BigInteger.valueOf(2);
+        for (int i = 2; i <= n; i++) {
+            f2 = f0.add(f1);
+            // f2 = f0 + f1;
+            f0 = f1;
+            f1 = f2;
+        }
+        return f2;
+    }
+}
