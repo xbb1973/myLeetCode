@@ -1651,15 +1651,14 @@ class Solution {
 //2、二分法=================================================
 
     /**
-     * @Description:
-     * 69. x 的平方根
+     * @Description: 69. x 的平方根
      * 实现 int sqrt(int x) 函数。
      * 计算并返回 x 的平方根，其中 x 是非负整数。
      * 由于返回类型是整数，结果只保留整数的部分，小数部分将被舍去。
      * 示例 1: 输入: 4 输出: 2
      * 示例 2: 输入: 8 输出: 2
      * 说明: 8 的平方根是 2.82842..., 由于返回类型是整数，小数部分将被舍去。
-     *
+     * <p>
      * 标签：数学、二分查找
      * 相似题目：Pow(x, n)、有效的完全平方数
      * @Param:
@@ -1671,14 +1670,14 @@ class Solution {
         // 解法一、暴力解，超时
         int index = 1;
         long ans = 1;
-        while(ans < x) {
+        while (ans < x) {
             index++;
-            ans = index*index;
+            ans = index * index;
         }
-        if(ans == x){
+        if (ans == x) {
             return index;
         } else {
-            return index-1;
+            return index - 1;
         }
 
         // 解法二、二分，利用数学变形解决溢出问题
@@ -1707,10 +1706,10 @@ class Solution {
 
         // orginal 方案二，自行优化
         {
-            public int mySqrt(int x) {
+            public int mySqrt ( int x){
             int L = 1, R = x;
             while (L <= R) {
-                int mid = （L + R) / 2;
+                int mid = （L + R) /2;
                 int square = mid * mid;
                 if (square == x) {
                     return mid;
@@ -1731,8 +1730,7 @@ class Solution {
     }
 
     /**
-     * @Description:
-     * 410. 分割数组的最大值
+     * @Description: 410. 分割数组的最大值
      * 给定一个非负整数数组和一个整数 m，你需要将这个数组分成 m 个非空的连续子数组。设计一个算法使得这 m 个子数组各自和的最大值最小。
      * 注意:
      * 数组长度 n 满足以下条件:
@@ -1758,8 +1756,60 @@ class Solution {
     }
 
 
+    /**
+     * @Description: 79. 单词搜索,DFS、回溯
+     * @Param:
+     * @return:
+     * @Date: 2020/6/23
+     * @Author: xbb1973
+     */
+    public boolean exist(char[][] board, String word) {
+        // System.out.println(word.length());
+        int rows = board.length;
+        int cols = board[0].length;
+        boolean[][] marked = new boolean[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                marked[i][j] = false;
+            }
+        }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (findWord(board, word, marked, 0, i, j, rows, cols)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
+    int[][] next = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
+    private boolean findWord(char[][] board, String word, boolean[][] marked, int length, int r, int c, int rows, int cols) {
+        // 1、递归退出条件
+        if (length == word.length()) {
+            return true;
+        }
+        // 2、判断matrix[rows][cols] != str[pathLen]，是否在搜索的字符串中
+        //      判断边界条件、判断
+        //      标记不可重入
+        if (r < 0 || r >= rows || c < 0 || c >= cols
+                || word.charAt(length) != board[r][c]
+                || marked[r][c]) {
+            return false;
+        }
+        // 3、标记
+        marked[r][c] = true;
+        // 4、从该结点往4个方向进行搜索/递归
+        for (int[] n : next) {
+            if (findWord(board, word, marked, length + 1, r + n[0], c + n[1], rows, cols)) {
+                return true;
+            }
+        }
+        // 5、回溯，取消标记，每次递归的起始点不同，暴力遍历所有点作为起始点
+        marked[r][c] = false;
+        return false;
+    }
 
 
 

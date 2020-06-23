@@ -628,7 +628,6 @@ public class OfferTaken {
     // 判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。
     // 路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向上下左右移动一个格子。
     // 如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。
-
     // 解题思路
     // 使用回溯法（backtracking）进行求解，它是一种暴力搜索方法，通过搜索所有可能的结果来求解问题。
     // 回溯法在一次搜索结束时需要进行回溯（回退），将这一次搜索过程中设置的状态进行清除，
@@ -638,9 +637,347 @@ public class OfferTaken {
     //
     //
     // 本题的输入是数组而不是矩阵（二维数组），因此需要先将数组转换成矩阵。
+    private final static int[][] next = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+    // private int rows;
+    // private int cols;
+
+    public boolean hasPath(char[] array, int rows, int cols, char[] str) {
+        if (rows == 0 || cols == 0) return false;
+        boolean[][] marked = new boolean[rows][cols];
+        char[][] matrix = buildMatrix(array, rows, cols);
+        // 两个for暴力搜索/递归
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (backtracking(matrix, str, marked, 0, i, j, rows, cols)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean backtracking(char[][] matrix, char[] str,
+                                 boolean[][] marked, int pathLen, int rows, int cols, int maxRows, int maxCols) {
+        // 1、递归退出条件
+        if (pathLen == str.length) {
+            return true;
+        }
+        // 2、、判断matrix[rows][cols] != str[pathLen]，是否在搜索的字符串中
+        //      判断边界条件、标记不可重入
+        if (rows < 0 || rows >= maxRows || cols < 0 || cols >= maxCols
+                || matrix[rows][cols] != str[pathLen] || marked[rows][cols]) {
+            return false;
+        }
+        // 3、标记
+        marked[rows][cols] = true;
+        // 4、从该结点往4个方向进行搜索/递归
+        for (int[] n : next) {
+            if (backtracking(matrix, str, marked, pathLen + 1, rows + n[0], cols + n[1], maxRows, maxCols)) {
+                return true;
+            }
+        }
+        // 5、回溯，取消标记，每次递归的起始点不同，暴力遍历所有点作为起始点
+        marked[rows][cols] = false;
+        return false;
+    }
+
+    private char[][] buildMatrix(char[] array, int rows, int cols) {
+        char[][] matrix = new char[rows][cols];
+        for (int r = 0, idx = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                matrix[r][c] = array[idx++];
+            }
+        }
+        return matrix;
+    }
+
+    // 链接：https://www.nowcoder.com/questionTerminal/c61c6999eecb4b8f88a98f66b273a3cc?answerType=1&f=discussion
+    // 来源：牛客网
+    // 描述
+    // 这是一篇针对初学者的题解，给出一个比较好的DFS模板。
+    // 知识点:DFS
+    // 难度：二星
+    // 题解
+    // 题目描述：给定一个二维字符串矩阵mat,和一个字符串str,判断str是否可以在mat中匹配。
+    // 可以选择的方向是上下左右。
+    // 方法：DFS
+    // 这道题大家都知道是DFS的题，关键是怎么可以快速并且正确的写出，是本题解讨论的重点。
+    // 首先解释一下递归函数。
+    // 递归函数：就是当前处理的问题是什么，并且下一次在规模减小的情况下处理相同的问题。
+    // 比如此题：当前处理的问题是：判断字符串str[0 ... len]是否在mat中匹配，显然下一次递归处理的问题是:如果str[0]已经匹配，则判断字符串str[1 ... len]是否在mat中匹配。
+    //
+    // 这里先给出一个我认为比较清晰的DFS模板：
+    // dfs(){
+    //     // 第一步，检查下标是否满足条件
+    //
+    //     // 第二步：检查是否被访问过，或者是否满足当前匹配条件
+    //
+    //     // 第三步：检查是否满足返回结果条件
+    //
+    //     // 第四步：都没有返回，说明应该进行下一步递归
+    //     // 标记
+    //     dfs(下一次)
+    //     // 回溯
+    // }
+    //
+    //
+    // main() {
+    //     for (对所有可能情况) {
+    //         dfs()
+    //     }
+    // }
+    // 上面每步的顺序都不能颠倒。
+
 
     // 13. 机器人的运动范围
+    // NowCoder
+    // 题目描述
+    // 地上有一个 m 行和 n 列的方格。一个机器人从坐标 (0, 0) 的格子开始移动，
+    // 每一次只能向左右上下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于 k 的格子。
+    // 例如，当 k 为 18 时，机器人能够进入方格 (35,37)，因为 3+5+3+7=18。
+    // 但是，它不能进入方格 (35,38)，因为 3+5+3+8=19。请问该机器人能够达到多少个格子？
+    // 解题思路
+    // 使用深度优先搜索（Depth First Search，DFS）方法进行求解。
+    // 回溯是深度优先搜索的一种特例，它在一次搜索过程中需要设置一些本次搜索过程的局部状态，
+    // 并在本次搜索结束之后清除状态。而普通的深度优先搜索并不需要使用这些局部状态，虽然还是有可能设置一些全局状态。
+    public int movingCount(int threshold, int rows, int cols) {
+        boolean[][] marked = new boolean[rows][cols];
+        // for (int[] n : next) {
+        //     searchRoute(threshold, marked, 0 + n[0], 0 + n[1], rows, cols);
+        // }
+        searchRoute(threshold, marked, 0, 0, rows, cols);
+        int ans = 0;
+        for (boolean[] booleans : marked) {
+            for (boolean aBoolean : booleans) {
+                if (aBoolean) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+    }
+
+    private void searchRoute(int threshold, boolean[][] marked, int r, int c, int rows, int cols) {
+        if (r < 0 || r >= rows || c < 0 || c >= cols
+                || marked[r][c] || biggerThanThreshold(r, c, threshold)) {
+            // do nothing
+        } else {
+            marked[r][c] = true;
+            for (int[] n : next) {
+                searchRoute(threshold, marked, r + n[0], c + n[1], rows, cols);
+            }
+        }
+    }
+
+    private boolean biggerThanThreshold(int r, int c, int threshold) {
+        int rAdd = 0;
+        int cAdd = 0;
+        while (r % 10 > 0) {
+            rAdd += r % 10;
+            r = r / 10;
+        }
+        while (c % 10 > 0) {
+            cAdd += c % 10;
+            c = c / 10;
+        }
+        System.out.println(rAdd + cAdd);
+        if (rAdd + cAdd > threshold) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     // 14. 剪绳子
+    // Leetcode
+    // 题目描述
+    // 把一根绳子剪成多段，并且使得每段的长度乘积最大。
+    // n = 2
+    // return 1 (2 = 1 + 1)
+    // n = 10
+    // return 36 (10 = 3 + 3 + 4)
+    // 解题思路
+    //
+    // 贪心
+    // 尽可能多剪长度为 3 的绳子，并且不允许有长度为 1 的绳子出现。如果出现了，就从已经切好长度为 3 的绳子中拿出一段与长度为 1 的绳子重新组合，把它们切成两段长度为 2 的绳子。
+    // 证明：当 n >= 5 时，3(n - 3) - n = 2n - 9 > 0，且 2(n - 2) - n = n - 4 > 0。因此在 n >= 5 的情况下，将绳子剪成一段为 2 或者 3，得到的乘积会更大。又因为 3(n - 3) - 2(n - 2) = n - 5 >= 0，所以剪成一段长度为 3 比长度为 2 得到的乘积更大。
+    // public int integerBreak(int n) {
+    //     if (n < 2)
+    //         return 0;
+    //     if (n == 2)
+    //         return 1;
+    //     if (n == 3)
+    //         return 2;
+    //     int timesOf3 = n / 3;
+    //     if (n - timesOf3 * 3 == 1)
+    //         timesOf3--;
+    //     int timesOf2 = (n - timesOf3 * 3) / 2;
+    //     return (int) (Math.pow(3, timesOf3)) * (int) (Math.pow(2, timesOf2));
+    // }
+    // 动态规划
+    // public int integerBreak(int n) {
+    //     int[] dp = new int[n + 1];
+    //     dp[1] = 1;
+    //     for (int i = 2; i <= n; i++)
+    //         for (int j = 1; j < i; j++)
+    //             dp[i] = Math.max(dp[i], Math.max(j * (i - j), dp[j] * (i - j)));
+    //     return dp[n];
+    // }
+    //
+    // e 2.7 为极值点，带入可得x=3时 > x=2时的解，因此尽量拆分为3+3+3，若有1则改为2+2。
+    //
+    public int integerBreak(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        if (n == 1) {
+            return 0;
+        }
+        if (n == 2) {
+            return 1;
+        }
+        if (n == 3) {
+            return 2;
+        }
+        int mul2times = 0;
+        int mul3times = 0;
+        while (n / 3 >= 1) {
+            mul3times++;
+            n = n - 3;
+        }
+        switch (n) {
+            case 0:
+                // do nothing
+                break;
+            case 1:
+                mul3times--;
+                mul2times++;
+                mul2times++;
+                break;
+            case 2:
+                mul2times++;
+                break;
+            default:
+                break;
+        }
+        return (int) (Math.pow(2, mul2times) * Math.pow(3, mul3times));
+    }
+
     // 15. 二进制中 1 的个数
+    //      参考隔壁leetcode 191
+    public int NumberOf1(int n) {
+        int ans = 0;
+        while (n != 0) {
+            n &= (n - 1);
+            ans++;
+        }
+        return ans;
+    }
+
+    // 16. 数值的整数次方
+    // NowCoder
+    // 题目描述
+    // 给定一个 double 类型的浮点数 base 和 int 类型的整数 exponent，求 base 的 exponent 次方。
+    // 解题思路
+    // 下面的讨论中 x 代表 base，n 代表 exponent。
+    // 因为 (x*x)n/2 可以通过递归求解，并且每次递归 n 都减小一半，因此整个算法的时间复杂度为 O(logN)。
+    public double Power(double base, int exponent) {
+        // 1、解法一，brutal
+        if (exponent < 0) {
+            base = 1 / base;
+            exponent = -exponent;
+        }
+        double ans = 1.0;
+        for (int i = 0; i < exponent; i++) {
+            ans *= base;
+        }
+        return ans;
+        // 2、解法二，快速幂
+        boolean oddFlag = false;
+        double ans = 1;
+        // 二分快速幂
+        if (exponent < 0) {
+            base = 1 / base;
+            exponent = -exponent;
+        }
+        if ((exponent % 2) == 1) {
+            oddFlag = true;
+        }
+        exponent = exponent / 2;
+        for (int i = 0; i < exponent; i++) {
+            ans *= base;
+        }
+        if (oddFlag) {
+            return ans * ans * base;
+        } else {
+            return ans * ans;
+        }
+        // 3、。。。
+        return Math.pow(base, exponent);
+    }
+
+    // 18.2 删除链表中重复的结点
+    // NowCoder 类似 leetcode83题
+    // 题目描述
+    // 题目描述
+    // 在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，
+    // 重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+    // 解题描述 -1 1 1 1 1 1 2
+    public ListNode deleteDuplication(ListNode pHead) {
+        if (next == null) {
+            return pHead;
+        }
+        ListNode head = new ListNode(-1); // 新建一个头结点，防止链表中头结点是重复节点被删除。
+        ListNode trail = head;
+        while (pHead != null) {
+            ListNode nextNode = pHead.next;
+            boolean flag = false;
+            while (nextNode != null && pHead.val == nextNode.val) {
+                nextNode = nextNode.next;
+                flag = true;
+            }
+            if (!flag) {
+                trail.next = pHead;
+                trail = trail.next;
+            }
+            pHead = nextNode;
+        }
+        trail.next = null; // 1->2->3->3->3
+        return head.next;
+    }
+
+    // 83. 删除排序链表中的重复元素
+    // 给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+    // 示例 1:
+    // 输入: 1->1->2
+    // 输出: 1->2
+    // 示例 2:
+    // 输入: 1->1->2->3->3
+    // 输出: 1->2->3
+    public ListNode deleteDuplication(ListNode pHead) {
+        ListNode head = new ListNode(-1);
+        head.next = pHead;
+        ListNode cur = head, pre = head;
+        boolean deleteFlag = false;
+        while (cur.next != null) {
+            if (cur.next != null && cur.next.val == cur.val) {
+                deleteFlag = true;
+                while (cur.next != null && cur.next.val == cur.val) {
+                    cur = cur.next;
+                }
+            }
+            if (deleteFlag) {
+                cur = cur.next;
+                pre.next = cur;
+                deleteFlag = false;
+
+            } else {
+                pre = cur;
+                cur = cur.next;
+            }
+        }
+        return head.next;
+    }
+
 
 }
