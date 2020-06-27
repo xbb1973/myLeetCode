@@ -1,5 +1,3 @@
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import javax.swing.tree.TreeNode;
 import java.util.*;
 
@@ -12,6 +10,9 @@ import java.util.*;
  */
 // https://github.com/CyC2018/CS-Notes/blob/master/notes/剑指%20Offer%20题解%20-%20目录.md
 public class OfferTaken {
+    public static void main(String[] args) {
+
+    }
 
     // 3. 数组中重复的数字
     // 题目描述
@@ -924,37 +925,6 @@ public class OfferTaken {
     // 重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
     // 解题描述 -1 1 1 1 1 1 2
     public ListNode deleteDuplication(ListNode pHead) {
-        if (next == null) {
-            return pHead;
-        }
-        ListNode head = new ListNode(-1); // 新建一个头结点，防止链表中头结点是重复节点被删除。
-        ListNode trail = head;
-        while (pHead != null) {
-            ListNode nextNode = pHead.next;
-            boolean flag = false;
-            while (nextNode != null && pHead.val == nextNode.val) {
-                nextNode = nextNode.next;
-                flag = true;
-            }
-            if (!flag) {
-                trail.next = pHead;
-                trail = trail.next;
-            }
-            pHead = nextNode;
-        }
-        trail.next = null; // 1->2->3->3->3
-        return head.next;
-    }
-
-    // 83. 删除排序链表中的重复元素
-    // 给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
-    // 示例 1:
-    // 输入: 1->1->2
-    // 输出: 1->2
-    // 示例 2:
-    // 输入: 1->1->2->3->3
-    // 输出: 1->2->3
-    public ListNode deleteDuplication(ListNode pHead) {
         ListNode head = new ListNode(-1);
         head.next = pHead;
         ListNode cur = head, pre = head;
@@ -970,14 +940,593 @@ public class OfferTaken {
                 cur = cur.next;
                 pre.next = cur;
                 deleteFlag = false;
-
             } else {
                 pre = cur;
                 cur = cur.next;
+            }
+            // ⚠️ 卡了有点久，解决当1->1->1->1->1->1时候的问题
+            //      因为while是判断cur.next，因此当cur在链表尾时会报异常，要提前手动判断一下。
+            if (cur == null) {
+                break;
             }
         }
         return head.next;
     }
 
+    // 19. 正则表达式匹配
+    // NowCoder  同 leetcode 10.
+    // 题目描述
+    // 请实现一个函数用来匹配包括 '.' 和 '*' 的正则表达式。
+    // 模式中的字符 '.' 表示任意一个字符，
+    // 而 '*' 表示它前面的字符可以出现任意次（包含 0 次）。
+    // 在本题中，匹配是指字符串的所有字符匹配整个模式。
+    // 例如，字符串 "aaa" 与模式 "a.a" 和 "ab*ac*a" 匹配，但是与 "aa.a" 和 "ab*a" 均不匹配。
+    // 解题思路
+    // 应该注意到，'.' 是用来当做一个任意字符，而 '*' 是用来重复前面的字符。
+    // 这两个的作用不同，不能把 '.' 的作用和 '*' 进行类比，从而把它当成重复前面字符一次。
+    public boolean match(char[] str, char[] pattern) {
 
+        // 递归1
+        String s = String.copyValueOf(str);
+        String p = String.copyValueOf(pattern);
+        if (p.isEmpty()) {
+            return s.isEmpty();
+        }
+
+        boolean FirMatch = (!s.isEmpty()) && ((s.charAt(0) == p.charAt(0)) || (p.charAt(0) == '.'));
+        // boolean FirMatch = (true && ( (s.charAt(0)==p.charAt(0))||(p.charAt(0)=='.') );
+
+        if (p.length() >= 2 && p.charAt(1) == '*') {
+
+            return (FirMatch && match(s.substring(1).toCharArray(), p.toCharArray())) || (match(s.toCharArray(), p.substring(2).toCharArray()));
+        } else {
+
+            return FirMatch && match(s.substring(1).toCharArray(), p.substring(1).toCharArray());
+        }
+
+
+        if (str.length == pattern.length && pattern.length == 0) {
+            return true;
+        }
+        int N = str.length;
+        int M = pattern.length;
+
+        String s = String.copyValueOf(str);
+        String p = String.copyValueOf(pattern);
+
+        // 递归
+        boolean firstMatch = (!);
+        if (M >= 2 && pattern[1] == '*') {
+            return ((match(Arrays.copyOfRange(str, 0, N), Arrays.copyOfRange(pattern, 2, M)))
+                    || (firstMatch && match(Arrays.copyOfRange(str, 1, N), Arrays.copyOfRange(pattern, 0, M))));
+        } else {
+            return (firstMatch && match(Arrays.copyOfRange(str, 1, N), Arrays.copyOfRange(pattern, 1, M)));
+        }
+        // KMP字符匹配=DP动态规划/ DFA有限状态机，原理一样
+        // 计算这个 dp 数组，只和 pat 串有关，只需要计算一次就可以匹配任意str
+        // pat的下表i不是索引而是状态，因此会有区别
+        // N = str.len  M = pat.len
+        // dp[j][c] = next
+        // 0 <= j < M，代表当前的状态
+        // 0 <= c < 256，代表遇到的字符（ASCII 码）
+        // 0 <= next <= M，代表下⼀个状态
+        int[][] dp = dpConstruction(pattern);
+        int N = str.length;
+        int M = pattern.length;
+        int j = 0;
+        for (int i = 0; i < N; i++) {
+            j = dp[j][pattern[i]];
+            if (j == M) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int[][] dpConstruction(char[] pattern) {
+        int[][] dp = new int[pattern.length][256];
+        // dp[j][c]边界 当前状态j=0 遇到字符c=patt[0]时的 dp[0][pattern[0]]=next状态
+        dp[0][pattern[0]] = 1;
+        // 影子状态，初始为0，就是和当前状态具有相同的前缀
+        int X = 0;
+        for (int i = 1; i < pattern.length; i++) {
+            for (int c = 0; c < 256; c++) {
+                // 1、命中
+                if (pattern[i] == c || pattern[i] == '.') {
+                    dp[i][c] = i + 1;
+                } else if (pattern[i] == '*') {
+                    // 而 '*' 表示它前面的字符可以出现任意次（包含 0 次）。
+                    if (pattern[i - 1] == c) {
+                        dp[i][c] = dp[i - 1][c] + 1;
+                        i--;
+                    } else {
+
+                    }
+                } else {
+                    // 2、⚠️没有命中，此时i无法推进，
+                    //      将状态重启交给X处理
+                    dp[i][c] = dp[X][c];
+                }
+            }
+            // ⚠️更新影子状态
+            X = dp[X][pattern[i]];
+        }
+        return dp;
+    }
+
+    // KMP匹配 dp构造框架（伪码）
+    public DpConstruct(String pat) {
+        int M = pat.length();
+        // dp[状态][字符] = 下个状态
+        dp = new int[M][256];
+        // base case
+        dp[0][pat.charAt(0)] = 1;
+        // 影子状态 X 初始为 0
+        int X = 0;
+        // 构建状态转移图（稍改的更紧凑了）
+        for (int j = 1; j < M; j++) {
+            for (int c = 0; c < 256; c++)
+                dp[j][c] = dp[X][c];
+            dp[j][pat.charAt(j)] = j + 1;
+            // 更新影子状态
+            X = dp[X][pat.charAt(j)];
+        }
+        // for 0 <= j < M: #状态
+        // for 0 <= c < 256: #字符
+        // dp[j][c] = next
+    }
+
+    // KMP匹配（伪码）
+    public int KMPSearch(String txt) {
+        int M = pat.length();
+        int N = txt.length();
+        // pat 的初始态为 0
+        int j = 0;
+        for (int i = 0; i < N; i++) {
+            // 当前是状态 j，遇到字符 txt[i]，
+            // pat 应该转移到哪个状态？
+            j = dp[j][txt.charAt(i)];
+            // 如果达到终止态，返回匹配开头的索引
+            if (j == M) {
+                return i - M + 1;
+            }
+        }
+        // 没到达终止态，匹配失败
+        return -1;
+    }
+
+    // 暴⼒匹配（伪码）
+    int BrutalSearch(String pat, String txt) {
+        int M = pat.length;
+        int N = txt.length;
+        for (int i = 0; i <= N - M; i++) {
+            int j;
+            for (j = 0; j < M; j++) {
+                if (pat[j] != txt[i + j]) {
+                    break;
+                }
+            }
+            // pat 全都匹配了
+            if (j == M) return i;
+        }
+        // txt 中不存在 pat ⼦串
+        return -1;
+    }
+
+    /**
+     * @Description: 10. 正则表达式匹配
+     * 难度
+     * 困难
+     * 给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+     * <p>
+     * '.' 匹配任意单个字符
+     * '*' 匹配零个或多个前面的那一个元素
+     * 所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
+     * <p>
+     * 说明:
+     * <p>
+     * s 可能为空，且只包含从 a-z 的小写字母。
+     * p 可能为空，且只包含从 a-z 的小写字母，以及字符 . 和 *。
+     * 示例 1:
+     * <p>
+     * 输入:
+     * s = "aa"
+     * p = "a"
+     * 输出: false
+     * 解释: "a" 无法匹配 "aa" 整个字符串。
+     * 示例 2:
+     * <p>
+     * 输入:
+     * s = "aa"
+     * p = "a*"
+     * 输出: true
+     * 解释: 因为 '*' 代表可以匹配零个或多个前面的那一个元素, 在这里前面的元素就是 'a'。因此，字符串 "aa" 可被视为 'a' 重复了一次。
+     * 示例 3:
+     * <p>
+     * 输入:
+     * s = "ab"
+     * p = ".*"
+     * 输出: true
+     * 解释: ".*" 表示可匹配零个或多个（'*'）任意字符（'.'）。
+     * 示例 4:
+     * <p>
+     * 输入:
+     * s = "aab"
+     * p = "c*a*b"
+     * 输出: true
+     * 解释: 因为 '*' 表示零个或多个，这里 'c' 为 0 个, 'a' 被重复一次。因此可以匹配字符串 "aab"。
+     * 示例 5:
+     * <p>
+     * 输入:
+     * s = "mississippi"
+     * p = "mis*is*p*."
+     * 输出: false
+     * @Param:
+     * @return:
+     * @Date: 2020/6/26
+     * @Author: xbb1973
+     */
+    public boolean isMatch(String text, String pattern) {
+        if (pattern.isEmpty()) return text.isEmpty();
+
+        // 递归思路，不考虑text空、.和*的情况
+        boolean firstMatch = text.charAt(0) == pattern.charAt(0);
+        return firstMatch & isMatch(text.substring(1), pattern.substring(1));
+
+        // 递归思路，考虑.和*的情况
+        // 1、判断 text 是否为空，防止越界，如果 text 为空， 表达式直接判为 false, text.charAt(0)就不会执行了
+        boolean firstMatch = (!text.isEmpty() &&
+                (pattern.charAt(0) == text.charAt(0) || pattern.charAt(0) == '.'));
+        // 2、判断*
+        // ⚠️charAt下标从0开始，charAt1实际上就是第二个字符为*，因此假设*代表0个时，需要比较patt.sub2
+        if (pattern.length() >= 2 && pattern.charAt(1) == '*') {
+            // 两种情况
+            // pattern 直接跳过两个字符。表示 * 前边的字符出现 0 次
+            // pattern 不变，例如 text = aa ，pattern = a*，第一个 a 匹配，然后 text 的第二个 a 接着和 pattern 的第一个 a 进行匹配。表示 * 用前一个字符替代。
+            // 其实就是*代表0个的情况，和*代表1个以上为情况
+            // 1、*代表0个，match text, ptt.sub2
+            // 2、*代表1个，match text.sub1, ptt
+            return (isMatch(text, pattern.substring(2)) ||
+                    (firstMatch && isMatch(text.substring(1), pattern)));
+        } else {
+            return firstMatch & isMatch(text.substring(1), pattern.substring(1));
+        }
+    }
+
+
+    // 20. 表示数值的字符串
+    // NowCoder 同 leetcode 65
+    // 题目描述
+    // 请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。
+    // 例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。 但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+    // [+-]? \d* (\.\d+)? ([eE][+-]?\.\d+)?
+    // 解题思路
+    // 使用正则表达式进行匹配。
+    // []  ： 字符集合
+    // ()  ： 分组
+    // ?   ： 重复 0 ~ 1 次
+    // +   ： 重复 1 ~ n 次
+    // *   ： 重复 0 ~ n 次
+    // .   ： 任意字符
+    // \\. ： 转义后的 .
+    // \\d ： 数字
+    public boolean isNumeric(char[] str) {
+        if (str.length == 0) {
+            return false;
+        }
+
+        // 用例:
+        // "1+23"
+        // 对应输出应该为:
+        // false
+        // 你的输出为:
+        // true
+        return new String(str).matches("[+-]?\\d*(\\.\\d+)?([eE][+-]?\\d+)?");
+
+        // 正则表达式， [+-]? \d* (\.\d+)? ([eE][+-]?)\d+)?
+        return new String(str).matches("[+-]?\\d*(\\.\\d+)?([eE][+-]?\\d+)?");
+        // 正则表达式， [+-]? \d* (\.\d+)? ([eE][+-]?)\d+)?
+        return new String(str).matches("[+-]?\\d*(\\.\\d+)?([eE][+-]?\\d+)?");
+    }
+
+
+    // 65. 有效数字
+    // 验证给定的字符串是否可以解释为十进制数字。
+    // 例如:
+    // "0" => true
+    // " 0.1 " => true
+    // "abc" => false
+    // "1 a" => false
+    // "2e10" => true
+    // " -90e3   " => true
+    // " 1e" => false
+    // "e3" => false
+    // " 6e-1" => true
+    // " 99e2.5 " => false
+    // "53.5e93" => true
+    // " --6 " => false
+    // "-+3" => false
+    // "95a54e53" => false
+    // 说明: 我们有意将问题陈述地比较模糊。在实现代码之前，你应当事先思考所有可能的情况。这里给出一份可能存在于有效十进制数字中的字符列表：
+    // 数字 0-9
+    // 指数 - "e"
+    // 正/负号 - "+"/"-"
+    // 小数点 - "."
+    // 当然，在输入中，这些字符的上下文也很重要。
+    // 使用正则表达式进行匹配。
+    // []  ： 字符集合
+    // ()  ： 分组
+    // ?   ： 重复 0 ~ 1 次
+    // +   ： 重复 1 ~ n 次
+    // *   ： 重复 0 ~ n 次
+    // .   ： 任意字符
+    // \\. ： 转义后的 .
+    // \\d ： 数字
+    public boolean isNumber(String s) {
+        // "1 " => true
+        s = s.trim();
+        if (s.isEmpty()) {
+            return false;
+        }
+        // 正则表达式， base [+-]? \d* (\.\d+)? ([eE][+-]?\d+)?
+        // 1368 / 1481 个通过测试用例
+        // 1480 / 1481 个通过测试用例
+        // PASS
+        if (s.charAt(0) == 'e' || s.charAt(0) == 'E' || ((s.charAt(0) == '-' || s.charAt(0) == '+') && (s.charAt(1) == 'e' || s.charAt(1) == 'E'))) {
+            return false;
+        }
+        // 1428 / 1481 个通过测试用例
+        // ".1" => true
+        // "3." => true
+        // [+-]? (\d+(\.\d*)?)|(\d*(\.\d+)?)? ([eE][+-]?\d+)?
+        // 正则表达式，
+        // 1480 / 1481 个通过测试用例
+        return s.matches("[+-]?((\\d+(\\.\\d*)?)|(\\d*(\\.\\d+)?))?([eE][+-]?\\d+)?");
+    }
+
+
+    // 解法二 自动机
+    // 自己最开始想到的就是这个，编译原理时候在学到的自动机，就是一些状态转移。
+    // 这一块内容很多，自己也很多东西都忘了，但不影响我们写算法，主要参考这里。
+    // 如上图，从 0 开始总共有 9 个状态，橙色代表可接受状态，也就是表示此时是合法数字。
+    // 总共有四大类输入，数字，小数点，e 和 正负号。我们只需要将这个图实现就够了。
+    // 最后看返回的状态是否正确。
+    public boolean isNumber(String s) {
+        // 1、初始状态0，遇到 +/-、数字、 "." 变为状态 1 2 7
+        int state = 0;
+        s = s.trim();//去除头尾的空格
+        //遍历所有字符，当做输入
+        for (int i = 0; i < s.length(); i++) {
+            switch (s.charAt(i)) {
+                //输入正负号
+                case '+':
+                case '-':
+                    if (state == 0) {
+                        state = 1;
+                    } else if (state == 4) {
+                        state = 6;
+                    } else {
+                        return false;
+                    }
+                    break;
+                //输入数字
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    //根据当前状态去跳转
+                    switch (state) {
+                        case 0:
+                        case 1:
+                        case 2:
+                            state = 2;
+                            break;
+                        case 3:
+                            state = 3;
+                            break;
+                        case 4:
+                        case 5:
+                        case 6:
+                            state = 5;
+                            break;
+                        case 7:
+                            state = 8;
+                            break;
+                        case 8:
+                            state = 8;
+                            break;
+                        default:
+                            return false;
+                    }
+                    break;
+                //小数点
+                case '.':
+                    switch (state) {
+                        case 0:
+                        case 1:
+                            state = 7;
+                            break;
+                        case 2:
+                            state = 3;
+                            break;
+                        default:
+                            return false;
+                    }
+                    break;
+                //e
+                case 'e':
+                    switch (state) {
+                        case 2:
+                        case 3:
+                        case 8:
+                            state = 4;
+                            break;
+                        default:
+                            return false;
+                    }
+                    break;
+                default:
+                    return false;
+
+            }
+        }
+        //橙色部分的状态代表合法数字
+        return state == 2 || state == 3 || state == 5 || state == 8;
+    }
+
+    // 21. 调整数组顺序使奇数位于偶数前面
+    // NowCoder
+    // 题目描述
+    // 需要保证奇数和奇数，偶数和偶数之间的相对位置不变，这和书本不太一样。
+    // 解题思路
+    // 方法一：创建一个新数组，时间复杂度 O(N)，空间复杂度 O(N)。
+    // 方法二：使用冒泡思想，每次都将当前偶数上浮到当前最右边。时间复杂度 O(N2)，空间复杂度 O(1)，时间换空间。
+    public void reOrderArray(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+
+            // 下标优化前：
+            // 运行时间：18ms
+            // 占用内存：9320k
+            // for (int j = 0; j < array.length -1; j++) {
+
+            // 下标优化后：
+            // 运行时间：11ms
+            // 占用内存：9436k
+            for (int j = 0; j < array.length - 1 - i; j++) {
+                if (array[j] % 2 == 0) {
+                    if (array[j + 1] % 2 != 0) {
+                        swapInt(array, j, j + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    // 22. 链表中倒数第 K 个结点
+    // NowCoder
+    // 解题思路
+    // 设链表的长度为 N。设置两个指针 P1 和 P2，先让 P1 移动 K 个节点，则还有 N - K 个节点可以移动。此时让 P1 和 P2 同时移动，可以知道当 P1 移动到链表结尾时，P2 移动到第 N - K 个节点处，该位置就是倒数第 K 个节点。
+    public ListNode FindKthToTail(ListNode head, int k) {
+        ListNode kPre = new ListNode(-1);
+        kPre.next = head;
+        ListNode kAft = new ListNode(-1);
+        kAft.next = head;
+        int index = 0;
+        int length = 0;
+        while (kPre.next != null) {
+            kPre = kPre.next;
+            if (index < k) {
+                index++;
+                // do nothing
+            } else {
+                kAft = kAft.next;
+            }
+            length++;
+        }
+        if (length < k) {
+            return null;
+        }
+        return kAft.next;
+    }
+
+    // 23. 链表中环的入口结点
+    // NowCoder
+    // 题目描述
+    // 一个链表中包含环，请找出该链表的环的入口结点。要求不能使用额外的空间。
+    public ListNode EntryNodeOfLoop(ListNode head) {
+        if (head == null || head.next == null) {
+            return null;
+        }
+        ListNode kPre = new ListNode(-1);
+        kPre.next = head;
+        ListNode kAft = new ListNode(-1);
+        kAft.next = head;
+        while (true) {
+            kPre = kPre.next.next;
+            kAft = kAft.next;
+            if (kPre == kAft) {
+                break;
+            }
+        }
+        kPre = new ListNode(-1);
+        kPre.next = head;
+        while (true) {
+            kPre = kPre.next;
+            kAft = kAft.next;
+            if (kPre == kAft) {
+                break;
+            }
+        }
+        return kAft;
+
+
+        ListNode fast = head;
+        ListNode slow = head;
+        do {
+            fast = fast.next.next;
+            slow = slow.next;
+        } while (fast != slow);
+
+        fast = head;
+        while (fast != slow) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+
+        return slow;
+    }
+
+    // 24. 反转链表
+    // NowCoder
+    // 解题思路
+    // 递归
+    // 迭代 使用头插法。
+    public ListNode ReverseList(ListNode head) {
+        ListNode pHead = new ListNode(-1);
+        pHead.next = null;
+        while (head != null) {
+            ListNode tmp = head;
+            head = head.next;
+            tmp.next = pHead.next;
+            pHead.next = tmp;
+        }
+        return pHead.next;
+    }
+
+    // 25. 合并两个排序的链表
+    // NowCoder
+    // 题目描述
+    // 解题思路
+    // 递归
+    // 迭代
+    public ListNode Merge(ListNode list1, ListNode list2) {
+        ListNode pHead = new ListNode(-1);
+        // 尾插，保证顺序
+        ListNode r = new ListNode(-1);
+        r = pHead;
+        // pHead.next = r;
+        while (list1 != null && list2 != null) {
+            if (list1.val >= list2.val) {
+                r.next = list2;
+                list2 = list2.next;
+            } else {
+                r.next = list1;
+                list1 = list1.next;
+            }
+            r = r.next;
+        }
+        if (list1 == null) {
+            r.next = list2;
+        }
+        if (list2 == null) {
+            r.next = list1;
+        }
+        return pHead.next;
+    }
 }
