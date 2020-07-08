@@ -1,7 +1,5 @@
 import java.math.BigInteger;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author ：xbb
@@ -22,7 +20,6 @@ public class Main {
         // LongestCommonSubsequence();
         // OverDuePay();
         // MaxSt();
-
     }
 
     /**
@@ -313,49 +310,61 @@ public class Main {
      * for nowcoder 牛客网
      */
 
-}
-
-// 爬楼梯
-// 题目描述
-// 在你面前有一个n阶的楼梯，你一步只能上1阶或2阶。
-// 请问计算出你可以采用多少种不同的方式爬完这个楼梯。
-// 输入描述:
-// 一个正整数n(n<=100)，表示这个楼梯一共有多少阶
-// 输出描述:
-// 一个正整数，表示有多少种不同的方式爬完这个楼梯
-import java.util.*;
-import java.math.BigInteger;
-
-public class Main {
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        int n = in.nextInt();
-
-        BigInteger bigInteger = JumpFloor(n);
-        System.out.println(bigInteger.toString());
-    }
-
-    /**
-     * 如果不使用java.math.BigInteger无法处理溢出问题。
-     * @param n
-     * @return
-     */
-    public static BigInteger JumpFloor(int n) {
-        if (n < 1) {
-            return BigInteger.valueOf(0);
+    public static int findDuplicate(int[] array) {
+        // 1
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < array.length; i++) {
+            map.put(array[i], 1);
+            if (map.containsKey(array[i])) {
+                return array[i];
+            }
         }
-        if (n == 1 || n == 2) {
-            return BigInteger.valueOf(n);
-        }
-        BigInteger f0 = BigInteger.valueOf(1);
-        BigInteger f1 = BigInteger.valueOf(1);
-        BigInteger f2 = BigInteger.valueOf(2);
-        for (int i = 2; i <= n; i++) {
-            f2 = f0.add(f1);
-            // f2 = f0 + f1;
-            f0 = f1;
-            f1 = f2;
-        }
-        return f2;
+        return -1;
     }
 }
+//
+// // 爬楼梯
+// // 题目描述
+// // 在你面前有一个n阶的楼梯，你一步只能上1阶或2阶。
+// // 请问计算出你可以采用多少种不同的方式爬完这个楼梯。
+// // 输入描述:
+// // 一个正整数n(n<=100)，表示这个楼梯一共有多少阶
+// // 输出描述:
+// // 一个正整数，表示有多少种不同的方式爬完这个楼梯
+// import java.util.*;
+// import java.math.BigInteger;
+//
+// public class Main {
+//     public static void main(String[] args) {
+//         Scanner in = new Scanner(System.in);
+//         int n = in.nextInt();
+//
+//         BigInteger bigInteger = JumpFloor(n);
+//         System.out.println(bigInteger.toString());
+//     }
+//
+//     /**
+//      * 如果不使用java.math.BigInteger无法处理溢出问题。
+//      * @param n
+//      * @return
+//      */
+//     public static BigInteger JumpFloor(int n) {
+//         if (n < 1) {
+//             return BigInteger.valueOf(0);
+//         }
+//         if (n == 1 || n == 2) {
+//             return BigInteger.valueOf(n);
+//         }
+//         BigInteger f0 = BigInteger.valueOf(1);
+//         BigInteger f1 = BigInteger.valueOf(1);
+//         BigInteger f2 = BigInteger.valueOf(2);
+//         for (int i = 2; i <= n; i++) {
+//             f2 = f0.add(f1);
+//             // f2 = f0 + f1;
+//             f0 = f1;
+//             f1 = f2;
+//         }
+//         return f2;
+//     }
+//
+// }

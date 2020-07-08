@@ -1610,7 +1610,43 @@ class Solution {
             fast = nums[fast];
         }
         return slow;
+    }
 
+    private int findDuplicate(int[] array) {
+        // 1
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < array.length; i++) {
+            if (map.containsKey(array[i])) {
+                return array[i];
+            } else {
+                map.put(array[i], array[i]);
+            }
+        }
+        return -1;
+    }
+
+    private int findDuplicate(List<Integer> array) {
+        // 1
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < array.size(); i++) {
+            if (map.containsKey(array.get(i))) {
+                return map.get(array.get(i));
+            } else {
+                map.put(array.get(i), array.get(i));
+            }
+        }
+        return -1;
+
+        // 2
+        // int[] dp = new int[array.size()];
+        // int ans;
+        // for (int i = 0; i < array.size(); i++) {
+        //     dp[array.get(i)] += 1;
+        //     if (dp[array.get(i)] > 1) {
+        //         return array.get(i);
+        //     }
+        // }
+        // return -1;
     }
 
 //2、二分法=================================================
@@ -1810,6 +1846,7 @@ class Solution {
         marked[r][c] = false;
         return false;
     }
+
 
 
 

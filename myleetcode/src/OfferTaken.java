@@ -1,5 +1,5 @@
-import javax.swing.tree.TreeNode;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author ：xbb
@@ -264,6 +264,16 @@ public class OfferTaken {
 
         TreeNode(int x) {
             val = x;
+        }
+    }
+
+    public class RandomListNode {
+        int label;
+        RandomListNode next = null;
+        RandomListNode random = null;
+
+        RandomListNode(int label) {
+            this.label = label;
         }
     }
 
@@ -1529,4 +1539,431 @@ public class OfferTaken {
         }
         return pHead.next;
     }
+
+    // 26. 树的子结构
+    // NowCoder
+    // 题目描述
+    // 输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+    public boolean HasSubtree(TreeNode root1, TreeNode root2) {
+        if (root1 == null || root2 == null) {
+            return false;
+        }
+
+        return recursionHasSubtree(root1, root2) || recursionHasSubtree(root1.left, root2) || recursionHasSubtree(root1.right, root2);
+    }
+
+    private boolean recursionHasSubtree(TreeNode root1, TreeNode root2) {
+        // ⚠️特殊点，当root2为null则返回true，是因为前面判断都是non false
+        if (root2 == null) {
+            return true;
+        }
+        if (root1 == null) {
+            return false;
+        }
+        if (root1.val != root2.val) {
+            return false;
+        }
+        return recursionHasSubtree(root1.right, root2.right) && recursionHasSubtree(root1.left, root2.left);
+    }
+
+    // 27. 二叉树的镜像
+    // NowCoder
+    // 题目描述
+    // 操作给定的二叉树，将其变换为源二叉树的镜像。
+    public void Mirror(TreeNode root) {
+        if (root != null) {
+            // pass
+            swapTreeNode(root);
+            // fail
+            // swapTreeNode(root.left, root.right);
+            Mirror(root.left);
+            Mirror(root.right);
+        } else {
+            return;
+        }
+    }
+
+    // 为什么？？？
+    private void swapTreeNode(TreeNode root) {
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+    }
+
+    // 这个swap不对，root无法知晓left和right的变化。
+    private void swapTreeNode(TreeNode left, TreeNode right) {
+        TreeNode temp = left;
+        left = right;
+        right = temp;
+    }
+
+    // 28. 对称的二叉树
+    // NowCoder
+    boolean isSymmetrical(TreeNode pRoot) {
+        if (pRoot == null) {
+            return true;
+        }
+        return recursionIsSymmetrical(pRoot.left, pRoot.right);
+    }
+
+    private boolean recursionIsSymmetrical(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        if (left == null || right == null) {
+            return false;
+        }
+        if (left.val != right.val) {
+            return false;
+        }
+        return recursionIsSymmetrical(left.left, right.right) && recursionIsSymmetrical(left.right, right.left);
+    }
+
+    // 29. 顺时针打印矩阵
+    // NowCoder
+    // 纯计算数组边缘条件
+
+    // 30. 包含 min 函数的栈
+    // NowCoder
+    // 题目描述
+    // 定义栈的数据结构，请在该类型中实现一个能够得到栈最小元素的 min 函数。
+    // 定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O（1））。
+    // 注意：保证测试中不会当栈为空的时候，对栈调用pop()或者min()或者top()方法。
+    // ⚠️push、pop、top等都是时间复杂度为O(1)的操作，但是min需要遍历O(n)。
+    // 使用辅助栈来标识当前栈的min值
+    private Stack<Integer> masterStack = new Stack<>();
+    private Stack<Integer> slaveStack = new Stack<>();
+
+    public void push(int node) {
+        masterStack.push(node);
+        // ⚠️有时候很多if else 可以通过三元代替！！
+        slaveStack.push((slaveStack.isEmpty()) ? slaveStack.push(node) : Math.min(node, slaveStack.peek()));
+    }
+
+    public void pop() {
+        masterStack.pop();
+        slaveStack.pop();
+    }
+
+    public int top() {
+        // peek : Looks at the object at the top of this stack without removing it from the stack.
+        return masterStack.peek();
+    }
+
+    public int min() {
+        return slaveStack.peek();
+    }
+
+
+    // 31. 栈的压入、弹出序列
+    // NowCoder
+    // 题目描述
+    // 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。
+    // 例如序列 1,2,3,4,5 是某栈的压入顺序，
+    // 序列 4,5,3,2,1 是该压栈序列对应的一个弹出序列，
+    // 但 4,3,5,1,2 就不可能是该压栈序列的弹出序列。
+    // 解题思路
+    // 使用一个栈来模拟压入弹出操作。
+    public boolean IsPopOrder(int[] pushA, int[] popA) {
+        int n = pushA.length;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0, popIndex = 0; i < n; i++) {
+            stack.push(pushA[i]);
+            while (!stack.isEmpty() && popA[popIndex] == stack.peek()) {
+                stack.pop();
+                popIndex++;
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    // 32.1 从上往下打印二叉树
+    // NowCoder
+    // 题目描述
+    // 从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+    // 例如，以下二叉树层次遍历的结果为：1,2,3,4,5,6,7
+    // 解题思路
+    // 使用队列来进行层次遍历。
+    // 不需要使用两个队列分别存储当前层的节点和下一层的节点，因为在开始遍历一层的节点时，当前队列中的节点数就是当前层的节点数，只要控制遍历这么多节点数，就能保证这次遍历的都是当前层的节点。
+    public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
+        ArrayList<Integer> ans = new ArrayList<>();
+        // ⚠️使用LinkedList来作为queue
+        Queue<TreeNode> queue = new LinkedList<>();
+        // Queue<TreeNode> queue = new ArrayBlockingQueue<>();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            // ⚠️用continue优化null
+            if (node == null) {
+                continue;
+            }
+            ans.add(node.val);
+            // if (node.left != null)
+            queue.offer(node.left);
+            // if (node.right != null)
+            queue.offer(node.right);
+        }
+        return ans;
+    }
+
+    // 32.2 把二叉树打印成多行
+    // NowCoder
+    // 题目描述
+    // 和上题几乎一样。
+    ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> ansss = new ArrayList<>();
+        // ⚠️使用LinkedList来作为queue
+        Queue<TreeNode> queue = new LinkedList<>();
+        // Queue<TreeNode> queue = new ArrayBlockingQueue<>();
+        queue.offer(pRoot);
+        while (!queue.isEmpty()) {
+            ArrayList<Integer> ans = new ArrayList<>();
+            // ⚠️这个地方queue.size() > 0不能直接作为条件！,不然一个循环就跑完了
+            int currentSize = queue.size();
+            // while (queue.size() > 0) {
+            while (currentSize-- > 0) {
+                TreeNode node = queue.poll();
+                // ⚠️用continue优化null
+                if (node == null) {
+                    continue;
+                }
+                ans.add(node.val);
+                queue.offer(node.left);
+                queue.offer(node.right);
+            }
+            if (!ans.isEmpty()) {
+                ansss.add(ans);
+            }
+        }
+        return ansss;
+    }
+
+    // 32.3 按之字形顺序打印二叉树
+    // NowCoder
+    // 题目描述
+    // 请实现一个函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推。
+    // 解题思路
+    public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
+
+        boolean reverseFlag = false;
+        ArrayList<ArrayList<Integer>> ansss = new ArrayList<>();
+        // ⚠️使用LinkedList来作为queue
+        Queue<TreeNode> queue = new LinkedList<>();
+        // Queue<TreeNode> queue = new ArrayBlockingQueue<>();
+        queue.offer(pRoot);
+        while (!queue.isEmpty()) {
+            ArrayList<Integer> ans = new ArrayList<>();
+            // ⚠️这个地方queue.size() > 0不能直接作为条件！,不然一个循环就跑完了
+            int currentSize = queue.size();
+            // while (queue.size() > 0) {
+            while (currentSize-- > 0) {
+                TreeNode node = queue.poll();
+                // ⚠️用continue优化null
+                if (node == null) {
+                    continue;
+                }
+                ans.add(node.val);
+                queue.offer(node.left);
+                queue.offer(node.right);
+
+            }
+            if (reverseFlag) {
+                Collections.reverse(ans);
+            }
+            reverseFlag = !reverseFlag;
+            if (!ans.isEmpty()) {
+                ansss.add(ans);
+            }
+        }
+        return ansss;
+    }
+
+    // 33. 二叉搜索树的后序遍历序列
+    // NowCoder
+    // 题目描述
+    // 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。假设输入的数组的任意两个数字都互不相同。
+    // 例如，下图是后序遍历序列 1,3,2 所对应的二叉搜索树。
+    public boolean VerifySquenceOfBST(int[] sequence) {
+        if (sequence.length == 0 || sequence == null) {
+            return false;
+        }
+        return recursionVerifySequenceOfBST(sequence, 0, sequence.length - 1);
+    }
+
+    private boolean recursionVerifySequenceOfBST(int[] sequence, int leftIndex, int lastIndex) {
+        // ⚠️退出条件，以后如果实在不知道，就整个简答的例子先写着
+        if (lastIndex - leftIndex < 1) {
+            return true;
+        }
+        int rootValue = sequence[lastIndex];
+        int rightIndex = leftIndex;
+        while (rightIndex < lastIndex && sequence[rightIndex] < rootValue) {
+            rightIndex++;
+        }
+        for (int i = rightIndex; i < lastIndex; i++) {
+            if (sequence[i] < rootValue) {
+                return false;
+            }
+        }
+        return recursionVerifySequenceOfBST(sequence, leftIndex, rightIndex - 1) && recursionVerifySequenceOfBST(sequence, rightIndex, lastIndex - 1);
+    }
+
+    // 34. 二叉树中和为某一值的路径
+    // NowCoder
+    // 题目描述
+    // 输入一颗二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
+    // 下图的二叉树有两条和为 22 的路径：10, 5, 7 和 10, 12
+    ArrayList<ArrayList<Integer>> ansFindPath = new ArrayList<>();
+
+    public ArrayList<ArrayList<Integer>> FindPath(TreeNode root, int target) {
+        if (root == null) {
+            return ansFindPath;
+        }
+        preOrder(root, target, new ArrayList<>());
+        return ansFindPath;
+    }
+
+
+    private void preOrder(TreeNode root, int target, ArrayList<Integer> path) {
+        path.add(root.val);
+        target -= root.val;
+        if (root.left == null && root.right == null && target == 0) {
+            // ???????
+            // 为什么直接add path不行，需要new一个！！，不然最后会改变的。。因为是引用
+            // ansFindPath.add(path);
+            ansFindPath.addAll(new ArrayList<>(path));
+        } else {
+            if (root.left != null) {
+                preOrder(root.left, target, path);
+            }
+            if (root.right != null) {
+                preOrder(root.right, target, path);
+            }
+        }
+        // ⚠️核心代码，没想到的地方，代码走到这里
+        // 表示要回溯了，需要pop，不需要当前的root结点
+        path.remove(path.size() - 1);
+    }
+
+    // 35. 复杂链表的复制
+    // NowCoder
+    // 题目描述
+    // 输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，
+    // 另一个特殊指针random指向一个随机节点），请对此链表进行深拷贝，并返回拷贝后的头结点。
+    // （注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+    // 解题思路
+    // ⚠️关键点在于random其实就是映射关系，如果不处理好random映射的深拷贝会出现多余的Node，
+    // 所以要遍历已经深拷贝的链表，这里使用Map减少时间复杂度
+    public RandomListNode Clone(RandomListNode pHead) {
+        RandomListNode newHead = new RandomListNode(-1);
+        RandomListNode ans = new RandomListNode(-1);
+        RandomListNode tail = ans;
+        Map<Integer, RandomListNode> map = new HashMap<>();
+        newHead.next = pHead;
+        while (newHead.next != null) {
+            newHead = newHead.next;
+            RandomListNode temp = new RandomListNode(newHead.label);
+            if (newHead.random != null) {
+                if (map.containsKey(newHead.random.label)) {
+                    temp.random = map.get(newHead.random.label);
+                } else {
+                    RandomListNode random = new RandomListNode(newHead.random.label);
+                    random.next = newHead.random.next;
+                    map.put(random.label, random);
+                    temp.random = random;
+                }
+            }
+            tail.next = temp;
+            tail = tail.next;
+        }
+        tail.next = null;
+        return ans;
+    }
+
+    // 36. 二叉搜索树与双向链表
+    // NowCoder
+    // 题目描述
+    // 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+    List<TreeNode> list = new ArrayList<>();
+
+    public TreeNode Convert(TreeNode pRootOfTree) {
+        if (pRootOfTree == null) {
+            return pRootOfTree;
+        }
+        inOrder(pRootOfTree);
+        for (int i = 0; i < list.size(); i++) {
+            if (i != 0) {
+                list.get(i).left = list.get(i - 1);
+            }
+            if (i != list.size() - 1) {
+                list.get(i).right = list.get(i + 1);
+            }
+        }
+        return list.get(0);
+    }
+
+    private void inOrder(TreeNode pRootOfTree) {
+        if (pRootOfTree.left != null) {
+            inOrder(pRootOfTree.left);
+        }
+        list.add(pRootOfTree);
+        if (pRootOfTree.right != null) {
+            inOrder(pRootOfTree.right);
+        }
+    }
+
+    // 37. 序列化二叉树
+    // 题目描述
+    // 请实现两个函数，分别用来序列化和反序列化二叉树
+    // 二叉树的序列化是指：把一棵二叉树按照某种遍历方式的结果以某种格式保存为字符串，
+    // 从而使得内存中建立起来的二叉树可以持久保存。
+    // 序列化可以基于先序、中序、后序、层序的二叉树遍历方式来进行修改，序列化的结果是一个字符串，
+    // 序列化时通过 某种符号表示空节点（#），以 ！ 表示一个结点值的结束（value!）。
+    // 二叉树的反序列化是指：根据某种遍历顺序得到的序列化字符串结果str，重构二叉树。
+    // 例如，我们可以把一个只有根节点为1的二叉树序列化为"1,"，然后通过自己的函数来解析回这个二叉树
+    String Serialize(TreeNode root) {
+        if (root == null) {
+            return "#";
+        }
+        return root.val + "!" + Serialize(root.left) + "!" + Serialize(root.right) + "!";
+    }
+
+    List<TreeNode> list = new ArrayList<>();
+
+    TreeNode Deserialize(String str) {
+        if (str == null || str.isEmpty()) {
+            return null;
+        }
+        TreeNode ans = null;
+        int nodeIndex = 1;
+        for (int i = 0, numerStartIndex = 0; i < str.length(); i++) {
+            if ('!' == str.charAt(i) && nodeIndex == 1) {
+                ans = new TreeNode(Integer.parseInt(str.substring(numerStartIndex, i)));
+                list.add(ans);
+                nodeIndex++;
+                numerStartIndex = i + 1;
+            } else if (numerStartIndex < i){
+                if ('#' == str.charAt(i)) {
+                    numerStartIndex = i + 1;
+                    list.add(null);
+                }else if ('!' == str.charAt(i) || (numerStartIndex < i && i == str.length() - 1)) {
+                    TreeNode treeNode = new TreeNode(Integer.parseInt(str.substring(numerStartIndex, i)));
+                    list.add(treeNode);
+                    // 左，父nodeIndex / 2
+                    if (nodeIndex % 2 == 0) {
+                        list.get((nodeIndex / 2) - 1).left = treeNode;
+                    }
+                    // 右
+                    if (nodeIndex % 2 == 1) {
+                        list.get((nodeIndex / 2) - 1).right = treeNode;
+                    }
+                    numerStartIndex = i + 1;
+                }
+            } else {
+
+            }
+        }
+        return ans;
+    }
+
 }
