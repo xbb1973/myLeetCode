@@ -1848,6 +1848,116 @@ class Solution {
     }
 
 
+    // 算法导论，理论与实践结合！
+    // 912. 排序数组
+    // 给你一个整数数组 nums，请你将该数组升序排列。
+    // 示例 1：
+    // 输入：nums = [5,2,3,1]
+    // 输出：[1,2,3,5]
+    // 示例 2：
+    // 输入：nums = [5,1,1,2,0,0]
+    // 输出：[0,0,1,1,2,5]
+    // 提示：
+    // 1 <= nums.length <= 50000
+    // -50000 <= nums[i] <= 50000
+
+    // 暴力求解，显然会超时
+    public int[] sortArray(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 1; j < nums.length; j++) {
+                if (nums[j - 1] > nums[j]) {
+                    int tmp = nums[j - 1];
+                    nums[j - 1] = nums[j];
+                    nums[j] = tmp;
+                }
+            }
+        }
+        return nums;
+    }
+    // 使用分治，归并排序or快速排序
+    // 1、归并排序，把具有n个元素的待排序数组划分为2个具有n/2个元素的待排序数组，分解至方便求解，合并解。
+    // 伪代码
+    // void merge_sort(A, low, high) {
+    //     if (low < high) {
+    //         mid = (low+high)/2;
+    //         merge_sort(A, low, mid);
+    //         merge_sort(A, mid+1, high);
+    //         merge(A, low, mid, high);
+    //     }
+    // }
+    // void merge(A, low, mid, high) {
+    //     // 计算分解数组的长度
+    //     int n1 = mid - low + 1;
+    //     int n2 = high - mid;
+    //     // 使用辅助空间L、R存储
+    //     for (int i = 0; i < n1; i++) {
+    //         L[i] = A[p+i];
+    //     }
+    //     for (int i = 0; i < n2; i++) {
+    //         R[i] = A[mid+1+i];
+    //     }
+    //     // 哨兵？
+    //     L[n1] = Integer.MAX_VALUE;
+    //     R[n2] = Integer.MAX_VALUE;
+    //     // 归并
+    //     int Lindex = 0;
+    //     int Rindex = 0;
+    //     for (int i = low; i < high; i++) {
+    //         if (L[Lindex]<=R[Rindex]){
+    //             A[i] = L[Lindex];
+    //             Lindex++;
+    //         } else {
+    //             A[i] = R[Rindex];
+    //             Rindex++;
+    //         }
+    //     }
+    // }
+
+    public int[] sortArray(int[] nums) {
+        merge_sort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    void merge_sort(int[] A, int low, int high) {
+        if (low < high) {
+            int mid = (low + high) / 2;
+            merge_sort(A, low, mid);
+            merge_sort(A, mid + 1, high);
+            merge(A, low, mid, high);
+        }
+    }
+
+    void merge(int[] A, int low, int mid, int high) {
+        // 计算分解数组的长度
+        int n1 = mid - low + 1;
+        int n2 = high - mid;
+        int[] L = new int[n1 + 1];
+        int[] R = new int[n2 + 2];
+        // 使用辅助空间L、R存储
+        for (int i = 0; i < n1; i++) {
+            L[i] = A[low + i];
+        }
+        for (int i = 0; i < n2; i++) {
+            R[i] = A[mid + 1 + i];
+        }
+        // 哨兵？
+        L[n1] = Integer.MAX_VALUE;
+        R[n2] = Integer.MAX_VALUE;
+        // 归并
+        int Lindex = 0;
+        int Rindex = 0;
+        for (int i = low; i <= high; i++) {
+            // 哨兵在此处可以简化算法，可避免越界，因此不需要判断Lindex和Rindex越界的情况。
+            // 否则需要增加对每个子数组判断是否到达末尾的判断。
+            if (L[Lindex] <= R[Rindex]) {
+                A[i] = L[Lindex];
+                Lindex++;
+            } else {
+                A[i] = R[Rindex];
+                Rindex++;
+            }
+        }
+    }
 
 
 }
