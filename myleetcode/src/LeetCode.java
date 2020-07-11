@@ -1960,4 +1960,35 @@ class Solution {
     }
 
 
+    // 2、快速排序，把具有n个元素的待排序数组划分为2个[low,q-1] [q,high]的待排序数组，分解至方便求解，合并解。
+    // 伪代码
+    void quick_sort(int[] A, int low, int high) {
+        if (low < high) {
+            int partition = partition(A, low, high);
+            quick_sort(A, low, partition);
+            quick_sort(A, partition + 1, high);
+        }
+    }
+
+    int partition(int[] A, int low, int high) {
+        int pivot = A[low];
+        while (low < high) {
+            while (low < high && A[high] > pivot) {
+                high--;
+            }
+            A[low] = A[high];
+            while (low < high && A[low] < pivot) {
+                low++;
+            }
+            A[high] = A[low];
+        }
+        A[low] = pivot;
+        return low;
+    }
+
+    public int[] sortArray(int[] nums) {
+        quick_sort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
 }
