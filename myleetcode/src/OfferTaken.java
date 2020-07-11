@@ -1942,11 +1942,11 @@ public class OfferTaken {
                 list.add(ans);
                 nodeIndex++;
                 numerStartIndex = i + 1;
-            } else if (numerStartIndex < i){
+            } else if (numerStartIndex < i) {
                 if ('#' == str.charAt(i)) {
                     numerStartIndex = i + 1;
                     list.add(null);
-                }else if ('!' == str.charAt(i) || (numerStartIndex < i && i == str.length() - 1)) {
+                } else if ('!' == str.charAt(i) || (numerStartIndex < i && i == str.length() - 1)) {
                     TreeNode treeNode = new TreeNode(Integer.parseInt(str.substring(numerStartIndex, i)));
                     list.add(treeNode);
                     // 左，父nodeIndex / 2
@@ -1965,5 +1965,65 @@ public class OfferTaken {
         }
         return ans;
     }
+
+    // 38. 字符串的排列，此题有扩展题，去找找。
+    // NowCoder
+    // 题目描述
+    // 输入一个字符串,按字典序打印出该字符串中字符的所有排列。
+    // 例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+    // 输入描述:
+    // 输入一个字符串,长度不超过9(可能有字符重复),字符只包括大小写字母。
+    // 解题思路：回溯！回溯其实用遍历树结点，先序遍历、后序遍历。
+    // 代码⽅⾯，回溯算法的框架：
+    // result = []
+    // def backtrack(路径, 选择列表):
+    // if 满⾜结束条件:
+    // result.add(路径)
+    // return
+    // for 选择 in 选择列表:
+    // 做选择
+    // backtrack(路径, 选择列表)
+    // 撤销选择
+    Set<String> ans = new HashSet<>();
+    ArrayList<String> finnalAns = new ArrayList<>();
+
+    public ArrayList<String> Permutation(String str) {
+        int length = str.length();
+        if (length == 0) {
+            return finnalAns;
+        }
+        char[] characterSet = str.toCharArray();
+        Arrays.sort(characterSet);
+        backtrackingPermutation(new StringBuilder(), characterSet, new boolean[length]);
+        finnalAns.addAll(ans);
+        return finnalAns;
+    }
+
+    // 使用boolean[] hasUsed来记录使用情况，进行剪枝。
+    private void backtrackingPermutation(StringBuilder stringBuilder, char[] characterSet, boolean[] hasUsed) {
+        if (stringBuilder.length() == characterSet.length) {
+            ans.add(stringBuilder.toString());
+            return;
+        }
+        for (int i = 0; i < characterSet.length; i++) {
+            // 做选择
+            if (hasUsed[i]) {
+                continue;
+            }
+            // 使用Set或者判断去重，因为排序过，所以比较 i-i i 和 used关系。
+            // 判断去重
+            // if (i > 0 && characterSet[i] == characterSet[i - 1] && hasUsed[i - 1]) {
+            //     continue;
+            // }
+            stringBuilder.append(characterSet[i]);
+            hasUsed[i] = true;
+            // backtrack
+            backtrackingPermutation(stringBuilder, characterSet, hasUsed);
+            // 撤销选择
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            hasUsed[i] = false;
+        }
+    }
+
 
 }
