@@ -1961,7 +1961,7 @@ class Solution {
 
 
     // 2、快速排序，把具有n个元素的待排序数组划分为2个[low,q-1] [q,high]的待排序数组，分解至方便求解，合并解。
-    // 伪代码
+    // 伪代码和实现
     void quick_sort(int[] A, int low, int high) {
         if (low < high) {
             int partition = partition(A, low, high);
