@@ -2026,4 +2026,86 @@ public class OfferTaken {
     }
 
 
+    // 39. 数组中出现次数超过一半的数字
+    // NowCoder
+    // 解题思路
+    // 多数投票问题，可以利用 Boyer-Moore Majority Vote Algorithm 来解决这个问题，使得时间复杂度为 O(N)。
+    // 使用 cnt 来统计一个元素出现的次数，当遍历到的元素和统计元素相等时，令 cnt++，否则令 cnt--。
+    // 如果前面查找了 i 个元素，且 cnt == 0，说明前 i 个元素没有 majority，或者有 majority，但是出现的次数少于 i / 2 ，
+    // 因为如果多于 i / 2 的话 cnt 就一定不会为 0 。此时剩下的 n - i 个元素中，majority 的数目依然多于 (n - i) / 2，
+    // 因此继续查找就能找出 majority。
+    public int MoreThanHalfNum_Solution(int[] array) {
+        int cnt = 1;
+        int major = array[0];
+        for (int i = 1; i < array.length; i++) {
+            cnt = (major == array[i]) ? cnt + 1 : cnt - 1;
+            if (cnt == 0) {
+                major = array[i];
+                // ⚠️记得这里补cnt=1
+                cnt = 1;
+            }
+        }
+        // ⚠️上面的只是找出了疑似主元素，这里进行判定。
+        cnt = 0;
+        for (int i : array) {
+            if (i == major) {
+                cnt++;
+            }
+        }
+        return (cnt > array.length / 2) ? major : 0;
+    }
+
+
+    // 40. 最小的 K 个数
+    // NowCoder
+    // 解题思路
+    // 快速选择
+    // 复杂度：O(N) + O(1)
+    // 只有当允许修改数组元素时才可以使用
+    // 快速排序的 partition() 方法，会返回一个整数 j 使得 a[l..j-1] 小于等于 a[j]，且 a[j+1..h] 大于等于 a[j]，
+    // 此时 a[j] 就是数组的第 j 大元素。可以利用这个特性找出数组的第 K 个元素，这种找第 K 个元素的算法称为快速选择算法。
+    public ArrayList<Integer> GetLeastNumbers_Solution(int[] input, int k) {
+        if (input.length < k) {
+            return new ArrayList<>();
+        }
+        int n = input.length;
+        ArrayList<Integer> ans = new ArrayList<>();
+        int low = 0;
+        int high = n - 1;
+        int[] ints = quickSearch(input, low, high, k);
+        for (int anInt : ints) {
+            ans.add(anInt);
+        }
+        return ans;
+    }
+
+    private int[] quickSearch(int[] arr, int low, int high, int k) {
+        int j = partition(arr, low, high);
+        // 每快排切分1次，找到排序后下标为j的元素，如果j恰好等于k-1就返回j以及j左边所有的数；
+        if (j == k - 1) {
+            return Arrays.copyOf(arr, k);
+        }
+        // 否则根据下标j与k的大小关系来决定继续切分左段还是右段;
+        // 这个地方出问题，调试了十分钟。。。
+        // 重新寻找的范围内需要包含k-1 ！
+        return j > k - 1 ? quickSearch(arr, low, j - 1, k) : quickSearch(arr, j + 1, high, k);
+    }
+
+    private int partition(int[] arr, int low, int high) {
+        int pivot = arr[low];
+        while (low < high) {
+            // 判断条件时需要包含等于号
+            while (low < high && arr[high] >= pivot) {
+                high--;
+            }
+            arr[low] = arr[high];
+            while (low < high && arr[low] <= pivot) {
+                low++;
+            }
+            arr[high] = arr[low];
+        }
+        arr[low] = pivot;
+        return low;
+    }
+
 }
