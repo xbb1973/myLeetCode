@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author ：xbb
@@ -2106,6 +2105,430 @@ public class OfferTaken {
         }
         arr[low] = pivot;
         return low;
+    }
+
+    // 41.1 数据流中的中位数
+    // NowCoder
+    // 题目描述
+    // 如何得到一个数据流中的中位数？
+    // 如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。
+    // 如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+    // 解题思路
+    // /* 大顶堆，存储左半边元素 */
+    // private PriorityQueue<Integer> left = new PriorityQueue<>((o1, o2) -> o2 - o1);
+    // /* 小顶堆，存储右半边元素，并且右半边元素都大于左半边 */
+    // private PriorityQueue<Integer> right = new PriorityQueue<>();
+    // /* 当前数据流读入的元素个数 */
+    // private int N = 0;
+    // public void Insert(Integer val) {
+    //     /* 插入要保证两个堆存于平衡状态 */
+    //     if (N % 2 == 0) {
+    //         /* N 为偶数的情况下插入到右半边。
+    //          * 因为右半边元素都要大于左半边，但是新插入的元素不一定比左半边元素来的大，
+    //          * 因此需要先将元素插入左半边，然后利用左半边为大顶堆的特点，取出堆顶元素即为最大元素，此时插入右半边 */
+    // 大根堆
+    private PriorityQueue<Integer> left = new PriorityQueue<>((o1, o2) -> o2 - o1);
+    // 小根堆
+    private PriorityQueue<Integer> right = new PriorityQueue<>();
+
+    private List<Integer> list = new ArrayList<>();
+
+    public void Insert(Integer num) {
+        list.add(num);
+    }
+
+    public Double GetMedian() {
+        list.sort(((o1, o2) -> o1 - o2));
+        int mid = list.size() / 2;
+        if (list.size() % 2 == 0) {
+            return Double.valueOf((list.get(mid) + list.get(mid - 1)) / 2.0);
+        } else {
+            return Double.valueOf(list.get(mid));
+        }
+    }
+
+
+    // 41.2 字符流中第一个不重复的字符
+    // NowCoder
+    // 题目描述
+    // 请实现一个函数用来找出字符流中第一个只出现一次的字符。
+    // 例如，当从字符流中只读出前两个字符"go"时，第一个只出现一次的字符是"g"。
+    // 当从该字符流中读出前六个字符“google"时，第一个只出现一次的字符是"l"。
+    // 输出描述:
+    // 如果当前字符流没有存在出现一次的字符，返回#字符。
+    int[] cnt = new int[256];
+    Queue<Character> queue = new LinkedList<>();
+
+    //Insert one char from stringstream
+    public void Insert(char ch) {
+        cnt[ch]++;
+        if (cnt[ch] < 1) {
+            queue.add(ch);
+        }
+        // 清除队列中出现次数大于1的元素。
+        while (!queue.isEmpty() && cnt[queue.peek()] > 1) {
+            queue.poll();
+        }
+    }
+
+    //return the first appearence once char in current stringstream
+    public char FirstAppearingOnce() {
+        return queue.isEmpty() ? '#' : queue.peek();
+    }
+
+
+    // 42. 连续子数组的最大和
+    // NowCoder
+    // 题目描述
+    // HZ偶尔会拿些专业问题来忽悠那些非计算机专业的同学。
+    // 今天测试组开完会后,他又发话了:在古老的一维模式识别中,常常需要计算连续子向量的最大和,
+    // 当向量全为正数的时候,问题很好解决。
+    // 但是,如果向量中包含负数,是否应该包含某个负数,并期望旁边的正数会弥补它呢？
+    // 例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。
+    // 给一个数组，返回它的最大连续子序列的和，你会不会被他忽悠住？(子向量的长度至少是1)
+    // {6, -3, -2, 7, -15, 1, 2, 2}，连续子数组的最大和为 8（从第 0 个开始，到第 3 个为止）。
+    // 解题思路
+    public int FindGreatestSumOfSubArray(int[] array) {
+        int n = array.length;
+        int sum, greatestSum = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            // ⚠️这里是核心逻辑，
+            // 小于0的累加sum则抛弃，从当前点开始继续累加，
+            // 大于0的累加sum则继续累加。
+            sum = sum <= 0 ? array[i] : sum + val[i];
+            greatestSum = sum > greatestSum ? sum : greatestSum;
+        }
+        return greatestSum;
+    }
+
+    // 43. 从 1 到 n 整数中 1 出现的次数
+    // 题目描述
+    // 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+    // num1,num2分别为长度为1的数组。传出参数
+    // 将num1[0],num2[0]设置为返回结果
+
+    public void FindNumsAppearOnce(int[] array, int num1[], int num2[]) {
+        // 解法1、hashmap
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < array.length; i++) {
+            if (map.containsKey(array[i])) {
+                map.put(array[i], map.get(array[i]) + 1);
+            } else {
+                map.put(array[i], 1);
+            }
+        }
+        int flag = 0;
+        for (Integer integer : map.keySet()) {
+            if (map.get(integer) == 1 && flag == 0) {
+                num1[0] = integer;
+                flag++;
+            } else if (map.get(integer) == 1 && flag == 1) {
+                num2[0] = integer;
+            } else {
+
+            }
+        }
+
+        // 解法2、异或
+        // ⚠️异或运算：如果a、b两个值不相同，则异或结果为1。如果a、b两个值相同，异或结果为0。
+        int k = 0;
+        for (int i : array) {
+            // ⚠️最后的k结果实际上是要求的两个值异或的结果。
+            k ^= i;
+        }
+        // ⚠️通过找到k的第一个1位，1是由于两个数不同的位异或而得，可以把数组分为两组
+        int index = 1;
+        if ((index & k) == 0) {
+            index <<= 1;
+        }
+        int k1, k2;
+        for (int i : array) {
+            if ((i & index) == 0) {
+                k1 ^= i;
+            } else {
+
+                k2 ^= i;
+            }
+        }
+        num1[0] = k1;
+        num2[0] = k2;
+    }
+
+
+    // 45. 把数组排成最小的数
+    // NowCoder
+    // 题目描述
+    // 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+    // 例如输入数组 {3，32，321}，则打印出这三个数字能排成的最小数字为 321323。
+    // 解题思路
+    // 可以看成是一个排序问题，在比较两个字符串 S1 和 S2 的大小时，应该比较的是 S1+S2 和 S2+S1 的大小，
+    // 如果 S1+S2 < S2+S1，那么应该把 S1 排在前面，否则应该把 S2 排在前面。
+    public String PrintMinNumber(int[] numbers) {
+        if (numbers == null || numbers.length == 0) {
+            return "";
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        int n = numbers.length;
+        String[] numStrings = new String[n];
+        for (int i = 0; i < n; i++) {
+            numStrings[i] = numbers[i] + "";
+        }
+        Arrays.sort(numStrings, (s1, s2) -> (s1 + s2).compareTo(s2 + s1));
+        for (String numString : numStrings) {
+            stringBuffer.append(numString);
+        }
+        return stringBuffer.toString();
+    }
+
+    // 46. 把数字翻译成字符串
+    // Leetcode     此题有扩展，动态规划方面，到时候再深入了解把。
+    // 题目描述
+    // 给定一个数字，按照如下规则翻译成字符串：1 翻译成“a”，2 翻译成“b”... 26 翻译成“z”。
+    // 一个数字有多种翻译可能，例如 12258 一共有 5 种，分别是 abbeh，lbeh，aveh，abyh，lyh。
+    // 实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+    // 解题思路
+    // 91. Decode Ways
+    // A message containing letters from A-Z is being encoded to numbers using the following mapping:
+    // 'A' -> 1
+    // 'B' -> 2
+    // ...
+    // 'Z' -> 26
+    // Given a non-empty string containing only digits, determine the total number of ways to decode it.
+    // Example 1:
+    // Input: "12"
+    // Output: 2
+    // Explanation: It could be decoded as "AB" (1 2) or "L" (12).
+    // Example 2:
+    // Input: "226"
+    // Output: 3
+    // Explanation: It could be decoded as "BZ" (2 26), "VF" (22 6), or "BBF" (2 2 6).
+    int ans = 0;
+
+    public int numDecodings(String s) {
+        int begin = 0;
+        int length = s.length();
+        backtrackingNumDecodings(s, begin);
+        return ans;
+    }
+
+    // 使用boolean[] hasUsed来记录使用情况，进行剪枝。
+    private void backtrackingNumDecodings(String s, int begin) {
+        // 递归/回溯出口
+        if (begin == s.length()) {
+            ans++;
+            return;
+        }
+
+        // 171 / 258 个通过测试用例 状态：解答错误 输入： "0" 输出： 1 预期： 0
+        // Integer.valueOf(s.substring(begin, begin + 1)) >= 1
+        // Integer.valueOf(s.substring(begin, begin + 1)) <= 26
+
+        // 递归/回溯进入条件
+        if (begin <= (s.length() - 1)
+                && Integer.valueOf(s.substring(begin, begin + 1)) <= 26
+                && Integer.valueOf(s.substring(begin, begin + 1)) >= 1) {
+            // backtrack
+            // 先序/标记
+            begin = begin + 1;
+            backtrackingNumDecodings(s, begin);
+            // 后序/取消标记
+            begin = begin - 1;
+        }
+        // 递归/回溯进入条件
+        if (begin <= (s.length() - 2)
+                && Integer.valueOf(s.substring(begin, begin + 2)) <= 26
+                && Integer.valueOf(s.substring(begin, begin + 1)) >= 1) {
+            // backtrack
+            begin = begin + 2;
+            backtrackingNumDecodings(s, begin);
+            begin = begin - 2;
+        }
+    }
+
+    // 234 / 258 个通过测试用例
+    // 状态：超出时间限制
+    // 最后执行的输入：
+    // "9272971672512277354953939427689518239714228293463398742522722274929422229859968434281231132695842184"
+    // ⚠️要使用动态规划，空间换时间
+    public int numDecodings(String s) {
+        int length = s.length();
+
+        // 动态规划递归式，0.1.2.3.4.5....n
+        // ⚠️这样的动态规划需要额外判断0的情况。
+        // ⚠️可以考虑从n往前开始动态规划，遇到0则前进一位，合法的话则把10or20当成一个整数处理。否则直接return 0。
+
+        // if (n-1,n) > 26
+        // dp[n] = dp[n-1]
+        // if if (n-1,n) <= 26
+        //  dp[n] = dp[n-1] + dp[n-2]
+        // ⚠️特殊值0，进行特殊处理
+        int[] dp = new int[length];
+        if (Integer.valueOf(s.substring(0, 1)) == 0) {
+            return 0;
+        }
+        dp[0] = 1;
+        int noneZeroIndex = 0;
+        for (int i = 1; i < length; i++) {
+            if (Integer.valueOf(s.substring(i, i + 1)) == 0) {
+                if (Integer.valueOf(s.substring(noneZeroIndex, i + 1)) <= 26) {
+                    if (i >= 2) {
+                        dp[i] = dp[i - 2];
+                    } else {
+                        dp[i] = dp[i - 1];
+                    }
+                } else {
+                    for (int j = noneZeroIndex; j <= i; j++) {
+                        dp[j] = 0;
+                    }
+                }
+            } else {
+                noneZeroIndex = i;
+                if (Integer.valueOf(s.substring(i - 1, i)) != 0) {
+                    if (Integer.valueOf(s.substring(i - 1, i + 1)) > 26) {
+                        dp[i] = dp[i - 1];
+                    } else if (Integer.valueOf(s.substring(i - 1, i + 1)) <= 26) {
+                        if (i == 1) {
+                            dp[i] = dp[i - 1] + 1;
+                        } else {
+                            dp[i] = dp[i - 1] + dp[i - 2];
+                        }
+                    }
+                } else {
+                    dp[i] = dp[i - 1];
+                }
+            }
+        }
+        return dp[length - 1];
+    }
+
+
+    // 47. 礼物的最大价值
+    // NowCoder
+    // 题目描述
+    // 在一个 m*n 的棋盘的每一个格都放有一个礼物，每个礼物都有一定价值（大于 0）。从左上角开始拿礼物，每次向右或向下移动一格，直到右下角结束。给定一个棋盘，求拿到礼物的最大价值。例如，对于如下棋盘
+    // 1    10   3    8
+    // 12   2    9    6
+    // 5    7    4    11
+    // 3    7    16   5
+    // 礼物的最大价值为 1+12+5+7+7+16+5=53。
+    // 解题思路
+    // 应该用动态规划求解，而不是深度优先搜索，深度优先搜索过于复杂，不是最优解。
+    public int getMost(int[][] board) {
+        // write code here
+        int m = board.length;
+        int n = board[0].length;
+        int[] dp = new int[m + n];
+        int[][] dp = new int[m][n];
+        dp[0][0] = board[0][0];
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = dp[i - 1][0] + board[i][0];
+        }
+        for (int j = 1; j < n; j++) {
+            dp[0][j] = dp[0][j - 1] + board[0][j];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = Math.max((dp[i - 1][j] + board[i][j]), (dp[i][j - 1] + board[i][j]));
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+
+
+    // 48. 最长不含重复字符的子字符串
+    // 题目描述
+    // 输入一个字符串（只包含 a~z 的字符），求其最长不含重复字符的子字符串的长度。
+    // 例如对于 arabcacfr，最长不含重复字符的子字符串为 acfr，长度为 4。
+    // 解题思路
+    public int lengthOfLongestSubstring(String s) {
+        int length = s.length();
+        if (length < 1) {
+            return 0;
+        }
+        int[] dp = new int[length];
+        int max = 0;
+        Map<Character, Integer> map = new HashMap<>();
+        dp[0] = 1;
+        map.put(s.charAt(0), 0);
+        max = 1;
+        for (int i = 1; i < length; i++) {
+            char c = s.charAt(i);
+            if (!map.containsKey(c)) {
+                map.put(c, i);
+                dp[i] = dp[i - 1] + 1;
+            } else {
+                int duplicatedIndex = map.get(c);
+                dp[i] = i - duplicatedIndex;
+                map.put(s.charAt(i), i);
+            }
+            System.out.println(dp[i]);
+            if (dp[i] > max) {
+                max = dp[i];
+            }
+        }
+        return max;
+    }
+
+    public int lengthOfLongestSubstring(String s) {
+        int length = s.length();
+        if (length < 1) {
+            return 0;
+        }
+        int[] dp = new int[length];
+        Arrays.fill(dp, 1);
+        int max = 0;
+        max = 1;
+        for (int i = 1; i < length; i++) {
+            char c = s.charAt(i);
+            for (int j = i + 1; j < length; j++) {
+                if (s.charAt(j) != c) {
+                    dp[i]++;
+                }
+            }
+            if (dp[i] > max) {
+                max = dp[i];
+            }
+        }
+        return max;
+    }
+
+
+    // 49. 丑数
+    // NowCoder
+    // 题目描述
+    // 把只包含因子 2、3 和 5 的数称作丑数（Ugly Number）。例如 6、8 都是丑数，但 14 不是，因为它包含因子 7。习惯上我们把 1 当做是第一个丑数。求按从小到大的顺序的第 N 个丑数。
+    // 解题思路
+    public int GetUglyNumber_Solution(int index) {
+        int[] dp = new int[index + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+        return 0;
+    }
+
+
+    // 50. 第一个只出现一次的字符位置
+    // NowCoder
+    // 题目描述
+    // 在一个字符串中找到第一个只出现一次的字符，并返回它的位置。
+    // Input: abacc
+    // Output: b
+    // 解题思路
+    // 最直观的解法是使用 HashMap 对出现次数进行统计，但是考虑到要统计的字符范围有限，因此可以使用整型数组代替 HashMap，从而将空间复杂度由 O(N) 降低为 O(1)。
+    public int FirstNotRepeatingChar(String str) {
+        int[] cnt = new int[256];
+        int length = str.length();
+        if (length < 1) {
+            return 0;
+        }
+        for (int i = 0; i < length; i++) {
+            cnt[str.charAt(i)]++;
+        }
+        for (int i = 0; i < length; i++) {
+            if ((cnt[str.charAt(i)] == 1)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
 }
