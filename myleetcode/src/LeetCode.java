@@ -1822,7 +1822,7 @@ class Solution {
     int[][] next = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     private boolean findWord(char[][] board, String word, boolean[][] marked, int length, int r, int c, int rows, int cols) {
-        // 1、递归退出条件
+        // 1、递归退出条件/回溯达成条件
         if (length == word.length()) {
             return true;
         }
@@ -1834,7 +1834,7 @@ class Solution {
                 || marked[r][c]) {
             return false;
         }
-        // 3、标记
+        // 3、标记/先序操作
         marked[r][c] = true;
         // 4、从该结点往4个方向进行搜索/递归
         for (int[] n : next) {
@@ -1842,7 +1842,7 @@ class Solution {
                 return true;
             }
         }
-        // 5、回溯，取消标记，每次递归的起始点不同，暴力遍历所有点作为起始点
+        // 5、回溯，取消标记，每次递归的起始点不同，暴力遍历所有点作为起始点//后序操作
         marked[r][c] = false;
         return false;
     }
@@ -1991,4 +1991,180 @@ class Solution {
         return nums;
     }
 
+    // 46. 全排列
+    // 给定一个 没有重复 数字的序列，返回其所有可能的全排列。
+    // 示例:
+    // 输入: [1,2,3]
+    // 输出:
+    // [
+    //   [1,2,3],
+    //   [1,3,2],
+    //   [2,1,3],
+    //   [2,3,1],
+    //   [3,1,2],
+    //   [3,2,1]
+    // ]
+
+    List<List<Integer>> ans = new ArrayList<>();
+
+    public List<List<Integer>> permute(int[] nums) {
+        backTrackPermute(nums, new boolean[nums.length], new ArrayList<Integer>());
+        return ans;
+    }
+
+    private void backTrackPermute(int[] nums, boolean[] hasUsed, List<Integer> arrayList) {
+        if (arrayList.size() == nums.length) {
+            // ⚠️这个地方错了两次了！！！！！
+            // 直接传递arrarlist，到最后回溯的时候会remove掉掉。
+            ans.add(new ArrayList(arrayList));
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (hasUsed[i]) {
+                continue;
+            }
+            arrayList.add(nums[i]);
+            hasUsed[i] = true;
+            backTrackPermute(nums, hasUsed, arrayList);
+            arrayList.remove(arrayList.size() - 1);
+            hasUsed[i] = false;
+        }
+    }
+
+    // 给定一个可包含重复数字的序列，返回所有不重复的全排列。
+    // 示例:
+    // 输入: [1,1,2]
+    // 输出:
+    // [
+    //   [1,1,2],
+    //   [1,2,1],
+    //   [2,1,1]
+    // ]
+
+    List<List<Integer>> ans = new ArrayList<>();
+
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        // ⚠️若重复需要剪枝则数组必须先排序
+        Arrays.sort(nums);
+        backTrackPermute(nums, new boolean[nums.length], new ArrayList<Integer>());
+        return ans;
+    }
+
+    private void backTrackPermute(int[] nums, boolean[] hasUsed, List<Integer> arrayList) {
+        if (arrayList.size() == nums.length) {
+            // ⚠️这个地方错了两次了！！！！！
+            // 直接传递arrarlist，到最后回溯的时候会remove掉掉。
+            ans.add(new ArrayList(arrayList));
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (hasUsed[i]) {
+                continue;
+            }
+            // ⚠️!hasUsed[i - 1]和hasUsed[i - 1]都是剪枝
+            // 但是!hasUsed[i - 1]剪枝更加彻底，特点是：1、1'、1'' 出现的顺序只能是 1、1'、1''。
+            // 反之则逆转出现顺序。
+            if (i > 0 && !hasUsed[i - 1] && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            arrayList.add(nums[i]);
+            hasUsed[i] = true;
+            backTrackPermute(nums, hasUsed, arrayList);
+            arrayList.remove(arrayList.size() - 1);
+            hasUsed[i] = false;
+        }
+    }
+
+    // 31. 下一个排列
+    // 实现获取下一个排列的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+    // 如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+    // 必须原地修改，只允许使用额外常数空间。
+    // 以下是一些例子，输入位于左侧列，其相应输出位于右侧列。
+    // 1,2,3 → 1,3,2
+    // 3,2,1 → 1,2,3
+    // 1,1,5 → 1,5,1
+    public void nextPermutation(int[] nums) {
+        int max = nums[0];
+        int index = 0;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+                index = i;
+                break;
+            }
+        }
+        for (int i = index - 1; i > 0; i--) {
+            if (nums[i] < max) {
+                nums[index] = nums[i];
+                nums[i] = max;
+            }
+        }
+    }
+
+    // LCS问题-动态规划
+    // 	基本步骤：
+    // 	（1）描述最优解的结构。
+    // 	（2）递归的定义最优解的值。
+    // 	（3）按自底向上方式计算出最优值
+    //  （4）由计算出的结果，构造一个最优解
+    // 1、最优子结构，X Y Z，1、2、3、
+    // 2、最优解的递归式：
+    // c[i,j]表示存放X和Y的LCS长度
+    // c[i,j] = {      0,  i=0 or j=0;
+    //          { c[i-1,j-1]+1,    ij>0且xi=yj;
+    //          { Max(c[i,j-1],c[i-1,j]),    ij>0且xi≠yj;
+    // 3、自底向上计算最优解的值。
+    // 4、根据最优解的值，构造最优解。
+    //
+    // 1143. 最长公共子序列
+    // 给定两个字符串 text1 和 text2，返回这两个字符串的最长公共子序列的长度。
+    // 一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+    // 例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+    // 两个字符串的「公共子序列」是这两个字符串所共同拥有的子序列。
+    // 若这两个字符串没有公共子序列，则返回 0。
+    public int longestCommonSubsequence(String text1, String text2) {
+        // 1、找到最优子结构。
+        // 2、定义最优解值的递归式。
+        // 3、自顶向下求解最优解值。
+        int l1 = text1.length();
+        int l2 = text2.length();
+        int[][] c = new int[l1 + 1][l2 + 1];
+        int[][] b = new int[l1 + 1][l2 + 1];
+        int max = 0;
+        for (int i = 0; i < l1; i++) {
+            for (int j = 0; j < l2; j++) {
+                if (text1.charAt(i) == text2.charAt(j)) {
+                    c[i + 1][j + 1] = c[i][j] + 1;
+                    // "↖️"
+                    b[i + 1][j + 1] = 3;
+                } else {
+                    c[i + 1][j + 1] = Math.max(c[i + 1][j], c[i][j + 1]);
+                    if (c[i + 1][j] > c[i][j + 1]) {
+                        // "⬅️"
+                        b[i + 1][j + 1] = 2;
+                    } else {
+                        // "⬆️ "
+                        b[i + 1][j + 1] = 1;
+                    }
+                }
+                // if (c[i + 1][j + 1] > max) {
+                //     max = c[i + 1][j + 1];
+                // }
+            }
+        }
+
+        // 4、根据结果，构造最优解。
+        for (int i = 0; i <= l1; i++) {
+            for (int j = 0; j <= l2; j++) {
+                System.out.print(c[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        for (int i = 0; i <= l1; i++) {
+            for (int j = 0; j <= l2; j++) {
+                System.out.print(b[i][j] + " ");
+            }
+            System.out.println();
+        }
+        return c[l1][l2];
+    }
 }

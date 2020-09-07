@@ -2531,4 +2531,77 @@ public class OfferTaken {
         return 0;
     }
 
+
+    // 51. 数组中的逆序对
+    // NowCoder
+    // 题目描述
+    // 数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。
+    // 输入一个数组,求出这个数组中的逆序对的总数P。
+    // 并将P对1000000007取模的结果输出。 即输出P%1000000007
+    // 输入描述:
+    // 题目保证输入的数组中没有的相同的数字
+    // 数据范围：
+    // 	对于%50的数据,size<=10^4
+    // 	对于%75的数据,size<=10^5
+    // 	对于%100的数据,size<=2*10^5
+    // 解题思路
+    public int InversePairs(int[] array) {
+        int length = array.length;
+        int dp[] = new int[length];
+
+        // 解法一：暴力解，会超时
+
+        // 执行结果： 运行超时:您的程序未能在规定时间内运行结束，
+        // 请检查是否循环有错或算法复杂度过大。
+        // 用例通过率: 50.00% 运行时间: 4001ms 占用内存: 12004KB
+        // case通过率为50.00%
+        for (int i = 0; i < length; i++) {
+            for (int j = i + 1; j < length; j++) {
+                if (array[i] > array[j]) {
+                    dp[i]++;
+                }
+            }
+            if (i > 0) {
+                dp[i] += dp[i - 1];
+            }
+        }
+        return dp[length - 1];
+
+        // 解法二：采用分治思想，使用merge sort ？？ 没写过不太会
+
+    }
+
+    // 52. 两个链表的第一个公共结点
+    // NowCoder
+    // 题目描述
+    // 解题思路
+    // 设 A 的长度为 a + c，B 的长度为 b + c，其中 c 为尾部公共部分长度，可知 a + c + b = b + c + a。
+    // 当访问链表 A 的指针访问到链表尾部时，令它从链表 B 的头部重新开始访问链表 B；
+    // 同样地，当访问链表 B 的指针访问到链表尾部时，令它从链表 A 的头部重新开始访问链表 A。
+    // 这样就能控制访问 A 和 B 两个链表的指针能同时访问到交点。
+    public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
+        // 解法一：数学，a+c = b+c = n
+        ListNode l1 = pHead1, l2 = pHead2;
+        while (l1 != l2) {
+            l1 = (l1 == null) ? pHead1 : l1.next;
+            l2 = (l2 == null) ? pHead2 : l2.next;
+        }
+        return l1;
+    }
+
+
+    // 53. 数字在排序数组中出现的次数
+    // NowCoder
+    // 题目描述
+    // Input:
+    // nums = 1, 2, 3, 3, 3, 3, 4, 6
+    // K = 3
+    // Output:
+    // 4
+    // 解题思路
+    public int GetNumberOfK(int[] array, int k) {
+
+    }
+
+
 }

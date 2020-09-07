@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -20,6 +24,147 @@ public class Main {
         // LongestCommonSubsequence();
         // OverDuePay();
         // MaxSt();
+
+        Scanner in = new Scanner(System.in);
+        while (in.hasNextInt()) {// 注意，如果输入是多个测试用例，请通过while循环处理多个测试用例
+            int a = in.nextInt();
+            int b = in.nextInt();
+            System.out.println(a + b);
+        }
+
+        Test1(); // 给定n，计算1～n的bitCount个数，累加的
+        Test2(); // 给定数组，给出正负间隔的形式，一直有数组越界错误？
+        Test3(); // 给定计算公式 3+5/2-2*5,求出结果。
+    }
+
+    private static void Test2() {
+        // read all lines
+        List<String> lines = new ArrayList<String>();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(System.in));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // write codes here
+        int n = Integer.valueOf(lines.get(0));
+        if (n < 1){
+            return;
+        }
+        int[] input = new int[n];
+        int flag = -1;
+        for (int i = 0; i < n; i++) {
+            String s = lines.get(i + 1);
+            Integer value = Integer.valueOf(s);
+            if (flag == -1 && value < 0) {
+                flag = i;
+            }
+            input[i] = value;
+        }
+        if (flag == -1 || flag == 0){
+            for (int i = 0; i < input.length; i++) {
+                System.out.print(input[i] + " ");
+            }
+            return;
+        }
+        int[] positives = Arrays.copyOf(input, flag);
+        int[] negatives = Arrays.copyOfRange(input, flag, n);
+
+        int pi = 0;
+        int ni = 0;
+        for (int i = 0; i < n; i++) {
+            if (ni < negatives.length && pi < positives.length) {
+                if (i % 2 == 0) {
+                    input[i] = positives[pi++];
+                } else {
+                    input[i] = negatives[ni++];
+                }
+            } else {
+                if (negatives.length > positives.length) {
+                    input[i] = negatives[ni++];
+                } else {
+                    input[i] = positives[pi++];
+                }
+            }
+
+        }
+
+        for (int i = 0; i < input.length; i++) {
+            System.out.print(input[i] + " ");
+        }
+    }
+
+    private static void Test1() {
+        // read all lines
+        List<String> lines = new ArrayList<String>();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(System.in));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // write codes here
+        int testCaseNum = Integer.valueOf(lines.get(0));
+        int max = 0;
+        for (int i = 1; i <= testCaseNum; i++) {
+            String s = lines.get(i);
+            Integer value = Integer.valueOf(s);
+            if (value > max) {
+                max = value;
+            }
+        }
+
+        int[] dp = new int[max + 1];
+        CountNumOne(max, dp);
+        for (int i = 1; i <= testCaseNum; i++) {
+            String s = lines.get(i);
+            Integer value = Integer.valueOf(s);
+            System.out.println(dp[value]);
+        }
+    }
+
+    private static void CountNumOne(int n, int[] dp) {
+        if (n < 1) {
+            return;
+        }
+        dp[0] = 0;
+        for (int i = 1; i <= n; i++) {
+            int ans = 0;
+            int tempi = i;
+            while (i > 0) {
+                if ((i & 1) == 1) {
+                    ans++;
+                }
+                i = i >> 1;
+            }
+            dp[tempi] = dp[tempi - 1] + ans;
+        }
     }
 
     /**
@@ -154,9 +299,9 @@ public class Main {
         int n = in.nextInt();
         // 1~m 花的种类
         int m = in.nextInt();
-        int[] a_n = new int[n];
+        int[] aN = new int[n];
         for (int i = 0; i < n; i++) {
-            a_n[i] = in.nextInt();
+            aN[i] = in.nextInt();
         }
         // dp[i][j]记录从i到j次观看的花种类
         int[][] dp = new int[n][n];
@@ -169,9 +314,9 @@ public class Main {
         // dp[i][j] = dp[i][j-1]+ 0/1
         for (int i = 0; i < n; i++) {
             Set<Integer> count = new TreeSet<>();
-            count.add(a_n[i]);
+            count.add(aN[i]);
             for (int j = i + 1; j < n; j++) {
-                count.add(a_n[j]);
+                count.add(aN[j]);
                 dp[i][j] = count.size();
             }
             count.clear();
