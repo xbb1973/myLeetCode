@@ -2600,7 +2600,24 @@ public class OfferTaken {
     // 4
     // 解题思路
     public int GetNumberOfK(int[] array, int k) {
+        // 解法，二分查找，找出array-n 为 K和K+1数的最左索引
+        int kIndex = BinarySearch(array, k);
+        int kPlusIndex = BinarySearch(array, k + 1);
+        return (kIndex == array.length || array[kIndex] != k) ? 0 : kPlusIndex - kIndex;
+    }
 
+    private int BinarySearch(int[] array, int k) {
+        int low = 0;
+        int high = array.length - 1;
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            if (array[mid] >= k) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
     }
 
 
