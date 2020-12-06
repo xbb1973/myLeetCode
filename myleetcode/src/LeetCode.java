@@ -2167,4 +2167,259 @@ class Solution {
         }
         return c[l1][l2];
     }
+
+    // =====================================================================================================================
+    // New beginning from here, 12/06 of 2020, shouldn't take this long to starting coding.
+    // Leetcode 题解 - 双指针
+    // 1. 有序数组的 Two Sum
+    // 2. 两数平方和
+    // 3. 反转字符串中的元音字符
+    // 4. 回文字符串
+    // 5. 归并两个有序数组
+    // 6. 判断链表是否存在环
+    // 7. 最长子序列
+
+    // 1. 有序数组的 Two Sum
+    // 167. Two Sum II - Input array is sorted (Easy)
+    public int[] twoSum(int[] numbers, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < numbers.length; i++) {
+            map.put(numbers[i], numbers[i]);
+        }
+        for (int i = 0; i < numbers.length; i++) {
+            if (map.containsKey(target - numbers[i])) {
+                // return new int[]{numbers[i], target - numbers[i]};
+                for (int j = i+1; j < numbers.length; j++) {
+                    if (map.get(target - numbers[i]) == numbers[j]) {
+                        return new int[]{i+1, j+1};
+                    }
+                }
+            }
+        }
+        return new int[2];
+    }
+    public int[] twoSum(int[] numbers, int target) { // Best Performace
+        int i = 0;
+        int j = numbers.length - 1; // key set
+        while (i < j){
+            int total = numbers[i] + numbers[j];
+            if (total == target) {
+                return new int[]{i+1,j+1};
+            } else if (total < target) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return null;
+    }
+
+    // 2. 两数平方和
+    // 633. Sum of Square Numbers (Easy)
+    public boolean judgeSquareSum(int c) { // Best P
+        double sqrt = Math.sqrt(c);
+        int i = 0;
+        int j = (int)sqrt + 1;
+        while (i < j) {
+            int total = i * i + j * j;
+            if (total == c) {
+                return true;
+            } else if (total < c) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return false;
+    }
+
+    // 3. 反转字符串中的元音字符
+    // 345. Reverse Vowels of a String (Easy)
+    public String reverseVowels(String s) {
+        int i = 0;
+        int j = s.length() - 1;
+        StringBuffer ans = new StringBuffer(s);
+        while (i < j) {
+            char charAtI = s.charAt(i);
+            char charAtJ = s.charAt(j);
+            if (isAEIOU(charAtI) && isAEIOU(charAtJ)) {
+                char tmpCharAtI = charAtI;
+                ans.deleteCharAt(i);
+                ans.insert(i, charAtJ);
+                ans.deleteCharAt(j);
+                ans.insert(j, tmpCharAtI);
+                i++;j--;
+            } else if (isAEIOU(charAtI) && !isAEIOU(charAtJ)) {
+                j--;
+            } else if (!isAEIOU(charAtI) && isAEIOU(charAtJ)) {
+                i++;
+            } else {
+                i++;j--;
+            }
+        }
+        return ans.toString();
+    }
+    HashSet<Character> vowenls = new HashSet<>(Arrays.asList('a', 'A', 'e', 'E', 'i', 'I', 'o', 'O', 'u', 'U'));
+    public String reverseVowels(String s) { // BEST P
+        int i = 0;
+        int j = s.length() - 1;
+        // StringBuffer ans = new StringBuffer(s);
+        char[] ans = s.toCharArray(); // key set
+        while (i < j) {
+            char charAtI = s.charAt(i);
+            char charAtJ = s.charAt(j);
+            if (isAEIOU(charAtI) && isAEIOU(charAtJ)) {
+                ans[i] = charAtJ;
+                ans[j] = charAtI;
+                i++;j--;
+            } else if (isAEIOU(charAtI) && !isAEIOU(charAtJ)) {
+                j--;
+            } else if (!isAEIOU(charAtI) && isAEIOU(charAtJ)) {
+                i++;
+            } else {
+                i++;j--;
+            }
+        }
+        return new String(ans);
+    }
+
+    public boolean isAEIOU(char c) {
+        return vowenls.contains(c);
+        switch (c) {
+            case 'a':
+            case 'A':
+            case 'e':
+            case 'E':
+            case 'i':
+            case 'I':
+            case 'o':
+            case 'O':
+            case 'u':
+            case 'U':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // 4. 回文字符串
+    // 680. Valid Palindrome II (Easy)
+    // 本题的关键是处理删除一个字符。
+    public boolean validPalindrome(String s) {
+        int i = 0;
+        int j = s.length() - 1;
+        int k = 0;
+        char[] charArray = s.toCharArray(); // key set
+        while (i < j) {
+            if (charArray[i] != charArray[j]) {
+                return validPalindromeRecur(charArray, i+1, j) || validPalindromeRecur(charArray,  i, j-1);
+            }
+            i++;j--;
+        }
+        return true;
+    }
+
+    public boolean validPalindromeRecur(char[] charArray, int i, int j) {
+        while (i < j) {
+            if (charArray[i] != charArray[j]) {
+                return false;
+            }
+            i++;j--;
+        }
+        return true;
+    }
+
+    public boolean validPalindrome(String s) { // BEST P
+        int i = 0;
+        int j = s.length() - 1;
+        while (i < j) {
+            if (s.charAt(i) != s.charAt(j)) {
+                return validPalindromeRecur(s, i+1, j) || validPalindromeRecur(s,  i, j-1);
+            }
+            i++;j--;
+        }
+        return true;
+    }
+
+    public boolean validPalindromeRecur(String s, int i, int j) {
+        while (i < j) {
+            if (s.charAt(i) != s.charAt(j)) {
+                return false;
+            }
+            i++;j--;
+        }
+        return true;
+    }
+
+    // 5. 归并两个有序数组
+    // 88. Merge Sorted Array (Easy)
+    public void merge(int[] nums1, int m, int[] nums2, int n) { // BEST P
+        int i = m - 1;
+        int j = n - 1;
+        int k = m + n - 1;
+        while (i >= 0 || j >= 0) {
+            if (i < 0) {
+                nums1[k--] = nums2[j--];
+            } else if (j < 0) {
+                nums1[k--] = nums1[i--];
+            } else if (nums1[i] > nums2[j]) {
+                nums1[k--] = nums1[i--];
+            } else {
+                nums1[k--] = nums2[j--];
+            }
+        }
+    }
+
+    // 6. 判断链表是否存在环
+    // 141. Linked List Cycle (Easy)
+    public boolean hasCycle(ListNode head) {
+        if (head == null) return false;
+        ListNode p1 = head;
+        ListNode p2 = head.next;
+        while (p1 != null && p2 != null && p2.next != null) { // key set, if not recycler will meet null
+            if (p1 == p2) {
+                return true;
+            }
+            p1 = p1.next;
+            p2 = p2.next.next;
+        }
+        return false;
+    }
+
+    // 7. 最长子序列
+    // 524. Longest Word in Dictionary through Deleting (Medium)
+    public String findLongestWord(String s, List<String> d) {
+        int max = 0;
+        String maxWord = "";
+        for (String s1 : d) {
+            if (isSubString(s, s1)) {
+                if (s1.length() > max) {
+                    maxWord = s1;
+                    max = s1.length();
+                } else if (s1.length() == max) { // return dict seq samll
+                    int i = s1.compareTo(maxWord);
+                    if (i < 0) {
+                        maxWord = s1;
+                    }
+                }
+            }
+        }
+        return maxWord;
+    }
+
+    public boolean isSubString(String s1, String s2) {
+        int i = 0;
+        int j = 0;
+        while (i < s1.length() && j < s2.length()) { // two point
+            if (s1.charAt(i) == s2.charAt(j)) {
+                j++;
+            }
+            i++;
+        }
+        return j == s2.length();
+    }
+
+    // =====================================================================================================================
+    // New beginning from here, 12/06 of 2020, shouldn't take this long to starting coding.
+
 }
