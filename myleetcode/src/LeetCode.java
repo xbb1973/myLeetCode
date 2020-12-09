@@ -1,3 +1,5 @@
+import org.omg.PortableInterceptor.INACTIVE;
+
 import javax.swing.tree.TreeNode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -105,13 +107,9 @@ class Solution {
         int pivot = arr[low];
         while (low < high) {
             // 判断条件时需要包含等于号
-            while (low < high && arr[high] >= pivot) {
-                high--;
-            }
+            while (low < high && arr[high] >= pivot) high--;
             arr[low] = arr[high];
-            while (low < high && arr[low] <= pivot) {
-                low++;
-            }
+            while (low < high && arr[low] <= pivot) low++;
             arr[high] = arr[low];
         }
         arr[low] = pivot;
@@ -1973,13 +1971,9 @@ class Solution {
     int partition(int[] A, int low, int high) {
         int pivot = A[low];
         while (low < high) {
-            while (low < high && A[high] > pivot) {
-                high--;
-            }
+            while (low < high && A[high] > pivot) high--;
             A[low] = A[high];
-            while (low < high && A[low] < pivot) {
-                low++;
-            }
+            while (low < high && A[low] < pivot) low++;
             A[high] = A[low];
         }
         A[low] = pivot;
@@ -2421,5 +2415,197 @@ class Solution {
 
     // =====================================================================================================================
     // New beginning from here, 12/06 of 2020, shouldn't take this long to starting coding.
+
+    // =====================================================================================================================
+    // Another day for coding 12/07 of 2020, shouldn't take this long to starting coding.
+    // Leetcode 题解 - 排序
+    // 快速选择
+    // 快速排序
+    // 堆
+    // 1. Kth Element
+    // 桶排序
+    // 1. 出现频率最多的 k 个元素
+    // 2. 按照字符出现次数对字符串排序
+    // 荷兰国旗问题
+    // 1. 按颜色进行排序
+
+    // 快速选择
+    // 快速排序
+    // 堆
+    // 1. Kth Element
+    // 215. Kth Largest Element in an Array (Medium)
+    public int findKthLargest(int[] nums, int k) { // QuickSort O(N) O(1)
+        int low = 0;
+        int high = nums.length-1;
+        k = nums.length - k; // k == 2, target pIndex = N-2
+        int partitionIndex = partition(low, high, nums);
+        while (partitionIndex != k) { // SLOW in QuickSort
+            if (partitionIndex > k) {
+                partitionIndex = partition(low, partitionIndex-1, nums);
+            } else {
+                partitionIndex = partition(partitionIndex+1, high, nums);
+            }
+        }
+        while (low < high) { // FAST in QuickSort, O(N) why slow then Arrays.sort(x)....
+            if (partitionIndex == k) {
+                break;
+            } else if (partitionIndex > k) {
+                high = partitionIndex - 1;
+            } else {
+                low = partitionIndex + 1;
+            }
+            partitionIndex = partition(low, high, nums);
+        }
+        return nums[partitionIndex];
+    }
+
+    /**
+     * Get Kth Smaller Num, return Index from low~high index(0~nums.leth-1)
+     * @param low
+     * @param high
+     * @param nums
+     * @return
+     */
+    public int partition(int low, int high, int[] nums) {
+        int pivot = nums[low];
+        while (low < high) {
+            while (low < high && nums[high] >= pivot) high--;
+            nums[low] = nums[high];
+            while (low < high && nums[low] < pivot) low++;
+            nums[high] = nums[low];
+        }
+        nums[low] = pivot;
+        return low;
+    }
+
+    public int findKthLargest(int[] nums, int k) { // BEST P ????????   O(NlogN) O(1)
+        Arrays.sort(nums); // QuickSort O(NlogN) ....
+        return nums[nums.length-k];
+    }
+
+    public int findKthLargest(int[] nums, int k) { // 2nd BEST P, make sense   O(NlogK) O(1)
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(); // small top heap
+        for (int num : nums) {
+            priorityQueue.add(num);
+            if (priorityQueue.size() > k) { // 维护堆的大小为 K
+                priorityQueue.poll(); // poll del top element
+            }
+        }
+        return priorityQueue.peek(); // peek top element
+    }
+
+    // 桶排序
+    // 1. 出现频率最多的 k 个元素
+    // 2. 按照字符出现次数对字符串排序
+
+    // 1. 出现频率最多的 k 个元素
+    // 347. Top K Frequent Elements (Medium)
+    public int[] topKFrequent(int[] nums, int k) { // BEST P
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            map.put(num, map.getOrDefault(num, 0)+1); // get☑️
+        }
+
+        List<Integer>[] buckets = new ArrayList[nums.length+1];
+        for (Integer num : map.keySet()) {
+            Integer freq = map.get(num);
+            if (buckets[freq] == null) {
+                buckets[freq] = new ArrayList<>();
+            }
+            buckets[freq].add(num);
+        }
+
+        List<Integer> topK = new ArrayList<>();
+        for (int i = buckets.length - 1; i >= 0; i--) {
+            if (buckets[i] == null) continue;
+            for (Integer n : buckets[i]) {
+                topK.add(n);
+                if (topK.size() == k) break; // bug !
+            }
+            if (topK.size() == k) break; // add more for fix bug
+
+            // if (buckets[i].size() <= (k - topK.size())) {
+            //     topK.addAll(buckets[i]);
+            // } else {
+            //     topK.addAll(buckets[i].subList(0, k - topK.size())); // get ☑️
+            // }
+        }
+        int[] ans = new int[k];
+        System.out.println(k);
+        System.out.println(topK.size());
+        // for (int i = 0; i < k; i++) { // worked
+        for (int i = 0; i < topK.size(); i++) { // not, why? cause topK more than k, upper code issue.
+            ans[i] = topK.get(i);
+        }
+        return ans;
+    }
+
+    // 2. 按照字符出现次数对字符串排序
+    // 451. Sort Characters By Frequency (Medium)
+    public String frequencySort(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0)+1); // get☑️
+        }
+
+        List<Character>[] buckets = new ArrayList[s.length()+1];
+        for (Character character : map.keySet()) {
+            Integer freq = map.get(character);
+            if (buckets[freq] == null) {
+                buckets[freq] = new ArrayList<>();
+            }
+            buckets[freq].add(character);
+        }
+
+        // StringBuffer ans = new StringBuffer(); // sync SLOWER
+        StringBuilder ans = new StringBuilder(); // FAST
+        for (int i = buckets.length - 1; i >= 0; i--) {
+            if (buckets[i] == null) continue;
+            for (Character character : buckets[i]) {
+                for (int times = 0; times < i; times++) {
+                    ans.append(character);
+                }
+            }
+        }
+        return ans.toString();
+    }
+
+
+    // 荷兰国旗问题
+    // 1. 按颜色进行排序
+    public void sortColors(int[] nums) {
+        int[] frequencies = new int[3];
+        for (int i = 0; i < nums.length; i++) {
+            switch (nums[i]) {
+                case 0:
+                    frequencies[0]++;
+                    break;
+                case 1:
+                    frequencies[1]++;
+                    break;
+                case 2:
+                    frequencies[2]++;
+                    break;
+                default:break;
+            }
+        }
+        // 0-2 1-2 2-3
+        int k = 0;
+        for (int i = 0; i < frequencies[0]; i++) {
+            nums[k+i] = 0;
+        }
+        k += frequencies[0];
+        for (int i = 0; i < frequencies[1]; i++) {
+            nums[k+i] = 1;
+        }
+        k += frequencies[1];
+        for (int i = 0; i < frequencies[2]; i++) {
+            nums[k+i] = 2;
+        }
+        // return nums;
+    }
+
+    // =====================================================================================================================
+    // Another days for coding 12/07 of 2020, shouldn't take 3 days to complete.... faster faster....
 
 }
