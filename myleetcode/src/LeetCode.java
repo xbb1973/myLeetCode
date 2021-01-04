@@ -2183,22 +2183,23 @@ class Solution {
         for (int i = 0; i < numbers.length; i++) {
             if (map.containsKey(target - numbers[i])) {
                 // return new int[]{numbers[i], target - numbers[i]};
-                for (int j = i+1; j < numbers.length; j++) {
+                for (int j = i + 1; j < numbers.length; j++) {
                     if (map.get(target - numbers[i]) == numbers[j]) {
-                        return new int[]{i+1, j+1};
+                        return new int[]{i + 1, j + 1};
                     }
                 }
             }
         }
         return new int[2];
     }
+
     public int[] twoSum(int[] numbers, int target) { // Best Performace
         int i = 0;
         int j = numbers.length - 1; // key set
-        while (i < j){
+        while (i < j) {
             int total = numbers[i] + numbers[j];
             if (total == target) {
-                return new int[]{i+1,j+1};
+                return new int[]{i + 1, j + 1};
             } else if (total < target) {
                 i++;
             } else {
@@ -2213,7 +2214,7 @@ class Solution {
     public boolean judgeSquareSum(int c) { // Best P
         double sqrt = Math.sqrt(c);
         int i = 0;
-        int j = (int)sqrt + 1;
+        int j = (int) sqrt + 1;
         while (i < j) {
             int total = i * i + j * j;
             if (total == c) {
@@ -2242,18 +2243,22 @@ class Solution {
                 ans.insert(i, charAtJ);
                 ans.deleteCharAt(j);
                 ans.insert(j, tmpCharAtI);
-                i++;j--;
+                i++;
+                j--;
             } else if (isAEIOU(charAtI) && !isAEIOU(charAtJ)) {
                 j--;
             } else if (!isAEIOU(charAtI) && isAEIOU(charAtJ)) {
                 i++;
             } else {
-                i++;j--;
+                i++;
+                j--;
             }
         }
         return ans.toString();
     }
+
     HashSet<Character> vowenls = new HashSet<>(Arrays.asList('a', 'A', 'e', 'E', 'i', 'I', 'o', 'O', 'u', 'U'));
+
     public String reverseVowels(String s) { // BEST P
         int i = 0;
         int j = s.length() - 1;
@@ -2265,13 +2270,15 @@ class Solution {
             if (isAEIOU(charAtI) && isAEIOU(charAtJ)) {
                 ans[i] = charAtJ;
                 ans[j] = charAtI;
-                i++;j--;
+                i++;
+                j--;
             } else if (isAEIOU(charAtI) && !isAEIOU(charAtJ)) {
                 j--;
             } else if (!isAEIOU(charAtI) && isAEIOU(charAtJ)) {
                 i++;
             } else {
-                i++;j--;
+                i++;
+                j--;
             }
         }
         return new String(ans);
@@ -2306,9 +2313,10 @@ class Solution {
         char[] charArray = s.toCharArray(); // key set
         while (i < j) {
             if (charArray[i] != charArray[j]) {
-                return validPalindromeRecur(charArray, i+1, j) || validPalindromeRecur(charArray,  i, j-1);
+                return validPalindromeRecur(charArray, i + 1, j) || validPalindromeRecur(charArray, i, j - 1);
             }
-            i++;j--;
+            i++;
+            j--;
         }
         return true;
     }
@@ -2318,7 +2326,8 @@ class Solution {
             if (charArray[i] != charArray[j]) {
                 return false;
             }
-            i++;j--;
+            i++;
+            j--;
         }
         return true;
     }
@@ -2328,9 +2337,10 @@ class Solution {
         int j = s.length() - 1;
         while (i < j) {
             if (s.charAt(i) != s.charAt(j)) {
-                return validPalindromeRecur(s, i+1, j) || validPalindromeRecur(s,  i, j-1);
+                return validPalindromeRecur(s, i + 1, j) || validPalindromeRecur(s, i, j - 1);
             }
-            i++;j--;
+            i++;
+            j--;
         }
         return true;
     }
@@ -2340,7 +2350,8 @@ class Solution {
             if (s.charAt(i) != s.charAt(j)) {
                 return false;
             }
-            i++;j--;
+            i++;
+            j--;
         }
         return true;
     }
@@ -2436,14 +2447,14 @@ class Solution {
     // 215. Kth Largest Element in an Array (Medium)
     public int findKthLargest(int[] nums, int k) { // QuickSort O(N) O(1)
         int low = 0;
-        int high = nums.length-1;
+        int high = nums.length - 1;
         k = nums.length - k; // k == 2, target pIndex = N-2
         int partitionIndex = partition(low, high, nums);
         while (partitionIndex != k) { // SLOW in QuickSort
             if (partitionIndex > k) {
-                partitionIndex = partition(low, partitionIndex-1, nums);
+                partitionIndex = partition(low, partitionIndex - 1, nums);
             } else {
-                partitionIndex = partition(partitionIndex+1, high, nums);
+                partitionIndex = partition(partitionIndex + 1, high, nums);
             }
         }
         while (low < high) { // FAST in QuickSort, O(N) why slow then Arrays.sort(x)....
@@ -2461,6 +2472,7 @@ class Solution {
 
     /**
      * Get Kth Smaller Num, return Index from low~high index(0~nums.leth-1)
+     *
      * @param low
      * @param high
      * @param nums
@@ -2480,7 +2492,7 @@ class Solution {
 
     public int findKthLargest(int[] nums, int k) { // BEST P ????????   O(NlogN) O(1)
         Arrays.sort(nums); // QuickSort O(NlogN) ....
-        return nums[nums.length-k];
+        return nums[nums.length - k];
     }
 
     public int findKthLargest(int[] nums, int k) { // 2nd BEST P, make sense   O(NlogK) O(1)
@@ -2503,10 +2515,10 @@ class Solution {
     public int[] topKFrequent(int[] nums, int k) { // BEST P
         Map<Integer, Integer> map = new HashMap<>();
         for (int num : nums) {
-            map.put(num, map.getOrDefault(num, 0)+1); // get☑️
+            map.put(num, map.getOrDefault(num, 0) + 1); // get☑️
         }
 
-        List<Integer>[] buckets = new ArrayList[nums.length+1];
+        List<Integer>[] buckets = new ArrayList[nums.length + 1];
         for (Integer num : map.keySet()) {
             Integer freq = map.get(num);
             if (buckets[freq] == null) {
@@ -2545,10 +2557,10 @@ class Solution {
     public String frequencySort(String s) {
         Map<Character, Integer> map = new HashMap<>();
         for (char c : s.toCharArray()) {
-            map.put(c, map.getOrDefault(c, 0)+1); // get☑️
+            map.put(c, map.getOrDefault(c, 0) + 1); // get☑️
         }
 
-        List<Character>[] buckets = new ArrayList[s.length()+1];
+        List<Character>[] buckets = new ArrayList[s.length() + 1];
         for (Character character : map.keySet()) {
             Integer freq = map.get(character);
             if (buckets[freq] == null) {
@@ -2586,26 +2598,293 @@ class Solution {
                 case 2:
                     frequencies[2]++;
                     break;
-                default:break;
+                default:
+                    break;
             }
         }
         // 0-2 1-2 2-3
         int k = 0;
         for (int i = 0; i < frequencies[0]; i++) {
-            nums[k+i] = 0;
+            nums[k + i] = 0;
         }
         k += frequencies[0];
         for (int i = 0; i < frequencies[1]; i++) {
-            nums[k+i] = 1;
+            nums[k + i] = 1;
         }
         k += frequencies[1];
         for (int i = 0; i < frequencies[2]; i++) {
-            nums[k+i] = 2;
+            nums[k + i] = 2;
         }
         // return nums;
     }
 
     // =====================================================================================================================
     // Another days for coding 12/07 of 2020, shouldn't take 3 days to complete.... faster faster....
+
+
+    // =====================================================================================================================
+    // Another days for coding 12/13 of 2020..
+    // Leetcode 题解 - 贪心思想
+    // 1. 分配饼干
+    // 2. 不重叠的区间个数
+    // 3. 投飞镖刺破气球
+    // 4. 根据身高和序号重组队列
+    // 5. 买卖股票最大的收益
+    // 6. 买卖股票的最大收益 II
+    // 7. 种植花朵
+    // 8. 判断是否为子序列
+    // 9. 修改一个数成为非递减数组
+    // 10. 子数组最大的和
+    // 11. 分隔字符串使同种字符出现在一起
+
+    // Key Set
+    // 如何证明不存在比贪心策略更优的策略，即贪心策略就是最优策略。 ???
+
+    // 1. 分配饼干
+    // 455. 分发饼干
+    public int findContentChildren(int[] g, int[] s) {
+        // g - requirement
+        // s - resource
+        Arrays.sort(g);
+        Arrays.sort(s);
+        int ans = 0;
+        int k = 0;
+        for (int requirement : g) {
+            for (int j = k; j < s.length; j++) {
+                k++;
+                if (requirement <= s[j]) {
+                    ans++;
+                    break;
+                }
+            }
+        }
+        return ans;
+    }
+
+    // 2. 不重叠的区间个数
+    // 435. 无重叠区间
+    // 算法思想为什么成立？？ 反证法，若B成立，则A也成立，则存在。。。。
+    public int eraseOverlapIntervals(int[][] intervals) {
+        if (intervals.length == 0) return 0;
+        // Arrays.sort(intervals, Comparator.comparing(ints -> ints[1])); // wocao ? niubi .
+        Arrays.sort(intervals, new Comparator<int[]>() { // BEST P, 使用 lambda 表示式创建 Comparator 会导致算法运行时间过长，如果注重运行时间，可以修改为普通创建 Comparator 语句：
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return (o1[1] < o2[1]) ? -1 : ((o1[1] == o2[1]) ? 0 : 1); // 从小到大排序 o1-o2
+                // 实现 compare() 函数时避免使用 return o1[1] - o2[1]; 这种减法操作，防止溢出。
+            }
+        });
+        int lastEnd = intervals[0][1];
+        int ans = 1;
+        for (int i = 1; i < intervals.length; i++) {
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+            if (start >= lastEnd) {
+                ans++;
+                lastEnd = end;
+            }
+        }
+        return intervals.length - ans;
+    }
+
+    // 3. 投飞镖刺破气球
+    // 452. 用最少数量的箭引爆气球
+    // same as 2. just reverse the result.
+    public int findMinArrowShots(int[][] intervals) {
+        if (intervals.length == 0) return 0;
+        // Arrays.sort(intervals, Comparator.comparing(ints -> ints[1])); // wocao ? niubi .
+        Arrays.sort(intervals, new Comparator<int[]>() { // BEST P, 使用 lambda 表示式创建 Comparator 会导致算法运行时间过长，如果注重运行时间，可以修改为普通创建 Comparator 语句：
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return (o1[1] < o2[1]) ? -1 : ((o1[1] == o2[1]) ? 0 : 1); // 从小到大排序 o1-o2
+                // 实现 compare() 函数时避免使用 return o1[1] - o2[1]; 这种减法操作，防止溢出。
+            }
+        });
+        int lastEnd = intervals[0][1];
+        int ans = 1;
+        for (int i = 1; i < intervals.length; i++) {
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+            if (start > lastEnd) {
+                ans++;
+                lastEnd = end;
+            }
+        }
+        return ans;
+    }
+
+    // 4. 根据身高和序号重组队列
+    // 406. 根据身高重建队列 Queue Reconstruction by Height
+    public int[][] reconstructQueue(int[][] people) {
+
+        // 前面两处排序错误，总结经验
+
+        // Arrays.sort(people, new Comparator<>() { // 只按照序号排序，不对，应该按照序号升序+身高降序
+        //     @Override
+        //     public int compare(int[] o1, int[] o2) {
+        //         return Integer.compare(o1[1], o2[1]); // k升序
+        //     }
+        // });
+
+        // Arrays.sort(people, new Comparator<>() {
+        //     @Override
+        //     public int compare(int[] o1, int[] o2) {
+        //         // return (o1[1] == o2[1]) ? Integer.compare(o2[0], o1[0]) : Integer.compare(o1[1], o2[1]) ; // k升序, h降序
+        //         return (o1[1] == o2[1]) ? (o2[0] - o1[0]) : (o1[1] - o2[1]) ; // k升序, h降序， 也不对
+        //         // 分辨方法 -1 0 1 升  1 0 -1 降
+        //     }
+        // });
+
+        // 身高 h 降序、个数 k 值升序，然后将某个学生插入队列的第 k 个位置中。
+        Arrays.sort(people, new Comparator<>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                // return (o1[1] == o2[1]) ? Integer.compare(o2[0], o1[0]) : Integer.compare(o1[1], o2[1]) ; // k升序, h降序
+                return (o1[0] == o2[0]) ? (o1[1] - o2[1]) : (o2[0] - o1[0]); // h降序，k升序,  才对
+                // 分辨方法 -1 0 1 升  1 0 -1 降
+            }
+        });
+
+        // 按照身高排序之后，优先按身高高的people的k来插入，后序插入节点也不会影响前面已经插入的节点，最终按照k的规则完成了队列。
+        //
+        // 所以在按照身高从大到小排序后：
+        //
+        // 局部最优：优先按身高高的people的k来插入。插入操作过后的people满足队列属性
+        //
+        // 全局最优：最后都做完插入操作，整个队列满足题目队列属性
+        //
+        // 局部最优可推出全局最优，找不出反例，那就试试贪心。
+        //
+        // 一些同学可能也会疑惑，你怎么知道局部最优就可以推出全局最优呢？ 有数学证明么？
+        //
+        // 作者：carlsun-2
+        // 链接：https://leetcode-cn.com/problems/queue-reconstruction-by-height/solution/406du-shuo-shi-tan-xin-na-yao-wei-shi-yao-yong-tan/
+        // 来源：力扣（LeetCode）
+        // 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+        for (int i = 0; i < people.length; i++) {
+            int height = people[i][0];
+            int frontN = people[i][1];
+            System.out.println(height);
+            System.out.println(frontN);
+        }
+        List<int[]> queue = new ArrayList<>();
+        // for (int[] person : people) {
+        //     queue.add(person[1], person);
+        // }
+        for (int i = 0; i < people.length; i++) {
+            queue.add(people[i][1], people[i]);
+        }
+        return queue.toArray(new int[queue.size()][]);
+    }
+
+    // 5. 买卖股票最大的收益
+    public int maxProfit(int[] prices) {
+        if (prices.length == 0)
+            return 0;
+        // 只要记录前面的最小价格，将这个最小价格作为买入价格，然后将当前的价格作为售出价格，查看当前收益是不是最大收益。
+        int min = prices[0];
+        int ans = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if (prices[i] < min) {
+                min = prices[i];
+            }
+            if (prices[i] - min > ans) {
+                ans = prices[i] - min;
+            }
+        }
+        return ans;
+    }
+
+    // 6. 买卖股票的最大收益 II
+    // 122. 买卖股票的最佳时机 II
+    public int maxProfit(int[] prices) {
+        if (prices.length == 0)
+            return 0;
+        // 对于 [a, b, c, d]，如果有 a <= b <= c <= d ，那么最大收益为 d - a。而 d - a = (d - c) + (c - b) + (b - a) ，
+        // 因此当访问到一个 prices[i] 且 prices[i] - prices[i-1] > 0，那么就把 prices[i] - prices[i-1] 添加到收益中。
+        int ans = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if (prices[i] > prices[i - 1]) {
+                ans += prices[i] - prices[i - 1];
+            }
+        }
+        return ans;
+    }
+
+    // 7. 种植花朵
+    // 605. 种花问题
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        int max = 0;
+        for (int i = 0; i < flowerbed.length; i++) {
+            if (flowerbed[i] == 1) {
+                continue;
+            }
+            int pre = (i == 0) ? 0 : flowerbed[i - 1]; // 学习如何优雅获取前后结点而不越界。
+            int next = (i == flowerbed.length - 1) ? 0 : flowerbed[i + 1];
+            if (pre == 0 && next == 0) {
+                max++;
+                flowerbed[i] = 1;
+            }
+        }
+        return max >= n;
+    }
+
+    // 8. 判断是否为子序列
+    // 对后续挑战的一些思考--如何快速判断大量字符串//
+    // 如果有大量输入的 S，称作 S1, S2, ... , Sk 其中 k >= 10 亿，你需要依次检查它们是否为 T 的子序列。在这种情况下，你会怎样改变代码？
+    // 这种类似对同一个长字符串做很多次匹配的 ，可以像 KMP 算法一样，先用一些时间将长字符串中的数据 提取出来，磨刀不误砍柴功。有了提取好的数据，就可以快速的进行匹配。
+    // 作者：dongzengjie
+    // 链接：https://leetcode-cn.com/problems/is-subsequence/solution/dui-hou-xu-tiao-zhan-de-yi-xie-si-kao-ru-he-kuai-s/
+    // 来源：力扣（LeetCode）
+    // 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+    public boolean isSubsequence(String s, String t) {
+        if (s.length() == 0) {
+            return true;
+        }
+        if (t.length() == 0) {
+            return false;
+        }
+        char[] sub = s.toCharArray();
+        char[] total = t.toCharArray();
+
+        int j = 0;
+        for (int i = 0; i < total.length; i++) {
+            if (j == sub.length) { //
+                break;
+            }
+            if (sub[j] == total[i]) {
+                j++;
+            }
+        }
+        return j == sub.length;
+    }
+
+    // 9. 修改一个数成为非递减数组
+    public boolean checkPossibility(int[] nums) {
+        // 在出现 nums[i] < nums[i - 1] 时，需要考虑的是应该修改数组的哪个数，
+        // 使得本次修改能使 i 之前的数组成为非递减数组，并且 不影响后续的操作 。
+        // 优先考虑令 nums[i - 1] = nums[i]，因为如果修改 nums[i] = nums[i - 1] 的话，
+        // 那么 nums[i] 这个数会变大，就有可能比 nums[i + 1] 大，从而影响了后续操作。
+        // 还有一个比较特别的情况就是 nums[i] < nums[i - 2]，修改 nums[i - 1] = nums[i] 不能使数组成为非递减数组，
+        // 只能修改 nums[i] = nums[i - 1]。
+
+        // 给老子改！！！
+        int n = 0;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] - nums[i-1] < 0) {
+                n++;
+            }
+        }
+        return n >= 2;
+    }
+
+    // 10. 子数组最大的和
+    // 11. 分隔字符串使同种字符出现在一起
+
+    // =====================================================================================================================
+    // Another days for coding 12/13 of 2020..
+    // Not Complete but push in 1/4 of 2021 . Get boring in coding greedy algorithm ...
+
 
 }
