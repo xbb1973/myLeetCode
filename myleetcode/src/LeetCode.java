@@ -2872,7 +2872,7 @@ class Solution {
         // 给老子改！！！
         int n = 0;
         for (int i = 1; i < nums.length; i++) {
-            if (nums[i] - nums[i-1] < 0) {
+            if (nums[i] - nums[i - 1] < 0) {
                 n++;
             }
         }
@@ -2886,5 +2886,401 @@ class Solution {
     // Another days for coding 12/13 of 2020..
     // Not Complete but push in 1/4 of 2021 . Get boring in coding greedy algorithm ...
 
+
+    // =====================================================================================================================
+    // Another days for coding 1/5 of 2021..
+    // Leetcode 题解 - 二分查找
+    // 1. 求开方
+    // 2. 大于给定元素的最小元素
+    // 3. 有序数组的 Single Element
+    // 4. 第一个错误的版本
+    // 5. 旋转数组的最小数字
+    // 6. 查找区间
+
+    // 二分查找实现
+    public int binarySearch(int[] nums, int key) {
+        int l = 0, h = nums.length - 1;
+        while (l <= h) {
+            int m = l + (h - l) / 2;
+            if (nums[m] == key) {
+                return m;
+            } else if (nums[m] < key) {
+                l = m + 1;
+            } else {
+                h = m - 1;
+            }
+        }
+        return -1;
+    }
+
+    // 例如在一个有重复元素的数组中查找 key 的最左位置的实现如下：
+    public int binarySearch(int[] nums, int key) {
+        int l = 0, h = nums.length; // ****
+        while (l < h) { // *
+            int m = l + (h - l) / 2;
+            if (nums[m] >= key) { // *
+                h = m;
+            } else { // *
+                l = m + 1;
+            }
+        }
+        return l;
+    }
+
+    // 1. 求开方
+    // 69. x 的平方根
+    public int mySqrt(int x) {
+        if (x == 1) return 1;
+        int h = x / 2;
+        int l = 1;
+        while (l <= h) {
+            int m = l + (h - l) / 2;
+            int div = x / m; // * 防止溢出
+            if (m == div) {
+                return m;
+            } else if (m < div) {
+                l = m + 1;
+            } else {
+                h = m - 1;
+            }
+        }
+        return h;
+    }
+
+    // 2. 大于给定元素的最小元素
+    // 744. Find Smallest Letter Greater Than Target (Easy)
+    public char nextGreatestLetter(char[] letters, char target) {
+        int l = 0;
+        int h = letters.length - 1;
+        while (l <= h) { // *
+            int m = l + (h - l) / 2;
+            if (letters[m] <= target) { // *
+                l = m + 1;
+            } else {
+                h = m - 1; // *
+            }
+        }
+        return (l == letters.length) ? letters[0] : letters[l];
+    }
+
+    // 3. 有序数组的 Single Element
+    // 540. Single Element in a Sorted Array (Medium)
+    public int singleNonDuplicate(int[] nums) {
+        int l = 0;
+        int h = nums.length - 1;
+        while (l < h) {
+            int m = l + (h - l) / 2;
+            // 保证 l/h/m 都在偶数位，使得查找区间大小一直都是奇数
+            if (m % 2 == 1) {
+                m--;
+            }
+            if (nums[m] == nums[m + 1]) {
+                l = m + 2;
+            } else {
+                h = m;
+            }
+        }
+        return nums[l];
+    }
+
+    // 4. 第一个错误的版本
+    // 278. First Bad Version (Easy)
+    // 如果第 m 个版本出错，则表示第一个错误的版本在 [l, m] 之间，令 h = m；否则第一个错误的版本在 [m + 1, h] 之间，令 l = m + 1。
+    // 因为 h 的赋值表达式为 h = m，因此循环条件为 l < h。
+    public int firstBadVersion(int n) {
+        int l = 1;
+        int h = n;
+        while (l < h) {
+            int m = l + (h - l) / 2;
+            if (isBadVersion(m)) {
+                h = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return l;
+    }
+
+    // 5. 旋转数组的最小数字
+    // 153. Find Minimum in Rotated Sorted Array (Medium)
+    public int findMin(int[] nums) {
+        int l = 0;
+        int h = nums.length - 1;
+        while (l < h) {
+            int m = l + (h - l) / 2;
+            if (nums[m] < nums[h]) { // key point
+                h = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return nums[l];
+    }
+
+    // 6. 查找区间
+    // 34. Find First and Last Position of Element in Sorted Array
+
+    public int[] searchRange(int[] nums, int target) {
+        // 我们将寻找 target 最后一个位置，转换成寻找 target+1 第一个位置，再往前移动一个位置。这样我们只需要实现一个二分查找代码即可。
+        int first = binarySearchL(nums, target);
+        int last = binarySearchL(nums, target + 1) - 1;
+        if (i == -1) {
+            return new int[]{-1, -1};
+        } else {
+            return new int[]{first, Math.max(first, last)};
+        }
+
+        // stupid
+        int i = binarySearchL(nums, target);
+        if (i == -1) {
+            return new int[]{-1, -1};
+        } else {
+            int j = i - 1;
+            int l = i;
+            int k = i + 1;
+            int h = i;
+            while (j >= 0) {
+                if (nums[j] == target) {
+                    l--;
+                    j--;
+                } else {
+                    break;
+                }
+            }
+            while (k < nums.length) {
+                if (nums[k] == target) {
+                    h++;
+                    k++;
+                } else {
+                    break;
+                }
+            }
+            return new int[]{l, h};
+        }
+    }
+
+    public int binarySearch(int[] nums, int key) {
+        int l = 0, h = nums.length - 1;
+        while (l <= h) {
+            int m = l + (h - l) / 2;
+            if (nums[m] == key) {
+                return m;
+            } else if (nums[m] > key) {
+                h = m - 1;
+            } else {
+                l = m + 1;
+            }
+        }
+        return -1;
+    }
+
+    public int[] searchRange(int[] nums, int target) {
+        if (nums.length == 0) {
+            return new int[]{-1, -1};
+        }
+        // 我们将寻找 target 最后一个位置，转换成寻找 target+1 第一个位置，再往前移动一个位置。这样我们只需要实现一个二分查找代码即可。
+        int first = binarySearchL(nums, target);
+        int last = binarySearchL(nums, target + 1) - 1;
+        if (first == nums.length || nums[first] != target) {
+            return new int[]{-1, -1};
+        } else {
+            return new int[]{first, Math.max(first, last)};
+        }
+    }
+
+    public int binarySearchL(int[] nums, int key) {
+        int l = 0, h = nums.length; // 为什么这里要为h
+        while (l < h) {
+            int m = l + (h - l) / 2;
+            if (nums[m] >= key) {
+                h = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return l;
+    }
+    // =====================================================================================================================
+    // Another days for coding 1/5 ~ 1/28 of 2021..
+
+    // =====================================================================================================================
+    // Another days for coding 1/28 of 2021..
+
+    // Leetcode 题解 - 分治
+    //
+    // Leetcode 题解 - 分治
+    // 1. 给表达式加括号
+    // 2. 不同的二叉搜索树
+    //
+    // 1. 给表达式加括号
+    // 241. Different Ways to Add Parentheses (Medium)
+    // 解题思路
+    // 整体思路:分治+回溯；遍历整个字符串，一旦遇见符号，则根据符号位置将字符串分成左右两部分，左边进行，右边进行；
+    // 递归函数的三要素：
+    // 递归函数终止条件（即最后不再调用递归函数而结束本次函数）---本层要干什么---返回值是什么
+    // 具体看注释：
+    public List<Integer> diffWaysToCompute(String input) {
+        List<Integer> waysToCompute = new ArrayList<>();
+        for (int i = 0; i < input.toCharArray().length; i++) {
+            char c = input.charAt(i);
+            if (c == '+' || c == '-' || c =='*') {
+                List<Integer> l = diffWaysToCompute(input.substring(0, i));
+                List<Integer> r = diffWaysToCompute(input.substring(i+1));  // 省略i
+                for (Integer integer : l) {
+                    for (Integer integer1 : r) {
+                        switch (c) {
+                            case '+':
+                                waysToCompute.add(integer+integer1);
+                                break;
+                            case '-':
+                                waysToCompute.add(integer-integer1);
+                                break;
+                            case '*':
+                                waysToCompute.add(integer*integer1);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        if (waysToCompute.size() == 0) {
+            waysToCompute.add(Integer.valueOf(input));
+        }
+        return waysToCompute;
+    }
+    public List<Integer> diffWaysToCompute(String input) {
+        List<Integer> res = new LinkedList<>();//这里要注意，每一个调用递归函数都会有一个【属于】本次
+        // 调用的res列表存放数据
+        // 递归函数传参传进来的是上一层左半部分或者右半部分
+        for(int i=0;i<input.length();i++){  //一层（一次函数调用中）需要将传入数字符串遍历完
+            char temp = input.charAt(i);
+            if(temp == '+' || temp == '-' || temp == '*'){
+                List<Integer> left = diffWaysToCompute(input.substring(0,i));
+                List<Integer> right = diffWaysToCompute(input.substring(i+1));
+                for(int l:left){
+                    for(int r:right){
+                        if(temp == '-'){
+                            res.add(l-r);//而一层中只有一个res用于存放数据
+                        }else if(temp == '+'){
+                            res.add(l+r);
+                        }else if(temp == '*'){
+                            res.add(l*r);
+                        }
+                    }
+                }
+            }
+        }
+        //这种情况是只有一个数字字符传入了递归函数，那么该次调用直接返回该数值的list集合
+        if(res.size() == 0){
+            res.add(Integer.valueOf(input));
+            return res;
+        }
+        return res;
+    }
+
+    // 2. 不同的二叉搜索树
+    // 95. Unique Binary Search Trees II (Medium)
+    /**
+     * Definition for a binary tree node.
+     * public class TreeNode {
+     *     int val;
+     *     TreeNode left;
+     *     TreeNode right;
+     *     TreeNode() {}
+     *     TreeNode(int val) { this.val = val; }
+     *     TreeNode(int val, TreeNode left, TreeNode right) {
+     *         this.val = val;
+     *         this.left = left;
+     *         this.right = right;
+     *     }
+     * }
+     */
+    public List<TreeNode> generateTrees(int n) {
+        List<TreeNode> ans = new ArrayList<>();
+        if (n == 0){
+            return ans;
+        }
+        return getAns(1, n);
+    }
+
+    public List<TreeNode> getAns(int start, int end) {
+        List<TreeNode> ans = new ArrayList<TreeNode>();
+        if (start > end) { // >
+            ans.add(null);
+            return ans;
+        }
+        if (start == end){ // ==
+            ans.add(new TreeNode(start));
+            return ans;
+        }
+        for (int i = start; i <= end; i++) { // every point as root // <
+            List<TreeNode> left = getAns(start, i - 1); // start ~ i-1
+            List<TreeNode> right = getAns(i + 1, end); // i+1 ~ end
+            for (TreeNode l : left) {
+                for (TreeNode r : right) {
+                    TreeNode root = new TreeNode(i);
+                    root.left = l;
+                    root.right = r;
+                    ans.add(root);
+                }
+            }
+        }
+        return ans;
+    }
+
+
+    // 解法二 递归
+    // 解法一完全没有用到查找二叉树的性质，暴力尝试了所有可能从而造成了重复。我们可以利用一下查找二叉树的性质。左子树的所有值小于根节点，右子树的所有值大于根节点。
+    // 所以如果求 1...n 的所有可能。
+    // 我们只需要把 1 作为根节点，[ ] 空作为左子树，[ 2 ... n ] 的所有可能作为右子树。
+    // 2 作为根节点，[ 1 ] 作为左子树，[ 3...n ] 的所有可能作为右子树。
+    // 3 作为根节点，[ 1 2 ] 的所有可能作为左子树，[ 4 ... n ] 的所有可能作为右子树，然后左子树和右子树两两组合。
+    // 4 作为根节点，[ 1 2 3 ] 的所有可能作为左子树，[ 5 ... n ] 的所有可能作为右子树，然后左子树和右子树两两组合。
+    // n 作为根节点，[ 1... n ] 的所有可能作为左子树，[ ] 作为右子树。
+    // 至于，[ 2 ... n ] 的所有可能以及 [ 4 ... n ] 以及其他情况的所有可能，可以利用上边的方法，把每个数字作为根节点，然后把所有可能的左子树和右子树组合起来即可。
+    // 如果只有一个数字，那么所有可能就是一种情况，把该数字作为一棵树。而如果是 [ ]，那就返回 null。
+    public List<TreeNode> generateTrees(int n) {
+        List<TreeNode> ans = new ArrayList<TreeNode>();
+        if (n == 0) {
+            return ans;
+        }
+        return getAns(1, n);
+    }
+
+    private List<TreeNode> getAns(int start, int end) {
+        List<TreeNode> ans = new ArrayList<TreeNode>();
+        //此时没有数字，将 null 加入结果中
+        if (start > end) {
+            ans.add(null);
+            return ans;
+        }
+        //只有一个数字，当前数字作为一棵树加入结果中
+        if (start == end) {
+            TreeNode tree = new TreeNode(start);
+            ans.add(tree);
+            return ans;
+        }
+        //尝试每个数字作为根节点
+        for (int i = start; i <= end; i++) {
+            //得到所有可能的左子树
+            List<TreeNode> leftTrees = getAns(start, i - 1);
+            //得到所有可能的右子树
+            List<TreeNode> rightTrees = getAns(i + 1, end);
+            //左子树右子树两两组合
+            for (TreeNode leftTree : leftTrees) {
+                for (TreeNode rightTree : rightTrees) {
+                    TreeNode root = new TreeNode(i);
+                    root.left = leftTree;
+                    root.right = rightTree;
+                    //加入到最终结果中
+                    ans.add(root);
+                }
+            }
+        }
+        return ans;
+    }
+
+    // =====================================================================================================================
+    // Another days for coding 1/28 of 2021..
 
 }
