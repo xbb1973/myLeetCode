@@ -1,3 +1,4 @@
+import javafx.util.Pair;
 import org.omg.PortableInterceptor.INACTIVE;
 
 import javax.swing.tree.TreeNode;
@@ -3282,5 +3283,208 @@ class Solution {
 
     // =====================================================================================================================
     // Another days for coding 1/28 of 2021..
+
+
+    // =====================================================================================================================
+    // Another days for coding 2/22 of 2021..
+    // Leetcode 题解 - 搜索
+    // BFS
+    // 1. 计算在网格中从原点到特定点的最短路径长度
+    // 2. 组成整数的最小平方数数量
+    // 3. 最短单词路径
+    // DFS
+    // 1. 查找最大的连通面积
+    // 2. 矩阵中的连通分量数目
+    // 3. 好友关系的连通分量数目
+    // 4. 填充封闭区域
+    // 5. 能到达的太平洋和大西洋的区域
+    // Backtracking
+    // 1. 数字键盘组合
+    // 2. IP 地址划分
+    // 3. 在矩阵中寻找字符串
+    // 4. 输出二叉树中所有从根到叶子的路径
+    // 5. 排列
+    // 6. 含有相同元素求排列
+    // 7. 组合
+    // 8. 组合求和
+    // 9. 含有相同元素的组合求和
+    // 10. 1-9 数字的组合求和
+    // 11. 子集
+    // 12. 含有相同元素求子集
+    // 13. 分割字符串使得每个部分都是回文数
+    // 14. 数独
+    // 15. N 皇后
+    // 深度优先搜索和广度优先搜索广泛运用于树和图中，但是它们的应用远远不止如此。
+
+    // BFS
+    // 1. 计算在网格中从原点到特定点的最短路径长度
+    // 1091. Shortest Path in Binary Matrix(Medium)
+    public int shortestPathBinaryMatrix(int[][] grids) {
+        if (grids == null || grids.length == 0 || grids[0].length == 0) {
+            return -1;
+        }
+        int[][] direction = {{1, -1}, {1, 0}, {1, 1}, {0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}};
+        int m = grids.length, n = grids[0].length;
+        // key code data structure Queue<Pair<Integer, Integer>>
+        // Use Queue FIFO, first find path is short path.
+        Queue<Pair<Integer, Integer>> queue = new LinkedList<>();
+        // Map can't getKey directly, just use Pair instead.
+        // Queue<HashMap<Integer, Integer>> queue2 = new LinkedList<>();
+        // 1.push into stack
+        queue.add(new Pair<>(0, 0));
+        int pathLength = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            pathLength++;
+            while (size-- > 0) {
+                // 2.get from stack to check value
+                Pair<Integer, Integer> cur = queue.poll();
+                int cr = cur.getKey(), cc = cur.getValue();
+                // check status 1 visit status
+                if (grids[cr][cc] == 1) {
+                    continue;
+                }
+                // check status 2 end status
+                if (cr == m - 1 && cc == n - 1) {
+                    return pathLength;
+                }
+                // 3.mark as visited
+                grids[cr][cc] = 1;
+                // 4.key code visit all 8 direction and put into stack
+                for (int[] d : direction) {
+                    int nr = cr + d[0], nc = cc + d[1];
+                    // check status 3 out of grids
+                    if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                        continue;
+                    }
+                    queue.add(new Pair<>(nr, nc));
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int shortestPathBinaryMatrix(int[][] grids) {
+        if (grids == null || grids.length == 0 || grids[0].length == 0) {
+            return -1;
+        }
+        int[][] direction = {{1, -1}, {1, 0}, {1, 1}, {0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}};
+        int m = grids.length, n = grids[0].length;
+        // key code data structure Queue<Pair<Integer, Integer>>
+        // Use Queue FIFO, first find path is short path.
+        Queue<Pair<Integer, Integer>> queue = new LinkedList<>();
+        queue.add(new Pair<Integer, Integer>(0,0));
+        int pathLength = 0;
+        while(!queue.isEmpty()) {
+            pathLength++;
+            int size = queue.size();
+            while(size-- > 0) {
+                Pair<Integer, Integer> cur = queue.poll();
+                int cm = cur.getKey();
+                int cn = cur.getValue();
+
+                // this can be settle into direction for loop
+                if (cm < 0 || cn < 0 || cm > m-1 || cn > n-1) {
+                    continue;
+                }
+                if (grids[cm][cn] == 1) {
+                    continue;
+                }
+                if (cm == m-1 && cn == n-1) {
+                    return pathLength;
+                }
+                grids[cm][cn] = 1;
+                int curPoint = grids[cm][cn];
+                for (int[] d : direction) {
+                    int nm = cm + d[0];
+                    int nn = cn + d[1];
+                    queue.add(new Pair<>(nm, nn));
+                }
+            }
+        }
+        return -1;
+    }
+
+
+    // 2. 组成整数的最小平方数数量
+    // 279. Perfect Squares (Medium)
+
+
+    // 3. 最短单词路径
+    // 127. Word Ladder (Medium)
+
+
+
+    // DFS
+    // 1. 查找最大的连通面积
+    // 695. Max Area of Island (Medium)
+
+
+    // 2. 矩阵中的连通分量数目
+    // 200. Number of Islands (Medium)
+
+
+    // 3. 好友关系的连通分量数目
+    // 547. Friend Circles (Medium)
+
+
+    // 4. 填充封闭区域
+    // 130. Surrounded Regions (Medium)
+
+
+
+    // 5. 能到达的太平洋和大西洋的区域
+    // 417. Pacific Atlantic Water Flow (Medium)
+
+
+    // Backtracking
+    // Backtracking（回溯）属于 DFS。
+    // 1. 数字键盘组合
+    // 17. Letter Combinations of a Phone Number (Medium)
+
+    // 2. IP 地址划分
+    // 93. Restore IP Addresses(Medium)
+
+    // 3. 在矩阵中寻找字符串
+    // 79. Word Search (Medium)
+
+    // 4. 输出二叉树中所有从根到叶子的路径
+    // 257. Binary Tree Paths (Easy)
+
+    // 5. 排列
+    // 46. Permutations (Medium)
+
+    // 6. 含有相同元素求排列
+    // 47. Permutations II (Medium)
+
+    // 7. 组合
+    // 77. Combinations (Medium)
+
+    // 8. 组合求和
+    // 39. Combination Sum (Medium)
+
+    // 9. 含有相同元素的组合求和
+    // 40. Combination Sum II (Medium)
+
+    // 10. 1-9 数字的组合求和
+    // 216. Combination Sum III (Medium)
+
+    // 11. 子集
+    // 78. Subsets (Medium)
+
+
+    // 12. 含有相同元素求子集
+    // 90. Subsets II (Medium)
+
+    // 13. 分割字符串使得每个部分都是回文数
+    // 131. Palindrome Partitioning (Medium)
+
+    // 14. 数独
+    // 37. Sudoku Solver (Hard)
+
+    // 15. N 皇后
+    // 51. N-Queens (Hard)
+
+
 
 }
