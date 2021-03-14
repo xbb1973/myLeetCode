@@ -3317,6 +3317,9 @@ class Solution {
     // 深度优先搜索和广度优先搜索广泛运用于树和图中，但是它们的应用远远不止如此。
 
     // BFS
+    // 在程序实现 BFS 时需要考虑以下问题：
+    // 队列：用来存储每一轮遍历得到的节点；
+    // 标记：对于遍历过的节点，应该将它标记，防止重复遍历。
     // 1. 计算在网格中从原点到特定点的最短路径长度
     // 1091. Shortest Path in Binary Matrix(Medium)
     public int shortestPathBinaryMatrix(int[][] grids) {
@@ -3405,11 +3408,111 @@ class Solution {
         return -1;
     }
 
-
     // 2. 组成整数的最小平方数数量
     // 279. Perfect Squares (Medium)
+    //  key logic
+    // 可以将每个整数看成图中的一个节点，如果两个整数之差为一个平方数，那么这两个整数所在的节点就有一条边。
+    // 要求解最小的平方数数量，就是求解从节点 n 到节点 0 的最短路径。
+    // 本题也可以用动态规划求解，在之后动态规划部分中会再次出现。
+    public int numSquares(int n) {
+        List<Integer> squares = generateSquares(n);
+        Queue<Integer> queue = new LinkedList<>();
+        boolean[] marked = new boolean[n + 1];
+        queue.add(n);
+        marked[n] = true;
+        int level = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            level++;
+            while (size-- > 0) {
+                int cur = queue.poll();
+                for (int s : squares) {
+                    int next = cur - s;
+                    if (next < 0) {
+                        break;
+                    }
+                    if (next == 0) {
+                        return level;
+                    }
+                    if (marked[next]) {
+                        continue;
+                    }
+                    marked[next] = true;
+                    queue.add(next);
+                }
+            }
+        }
+        return n;
+    }
+
+    /**
+     * 生成小于 n 的平方数序列
+     * @return 1,4,9,...
+     */
+    private List<Integer> generateSquares(int n) {
+        List<Integer> squares = new ArrayList<>();
+        int square = 1;
+        int diff = 3;
+        while (square <= n) {
+            // square 1 4 9 16 25  36
+            // diff    3 5 7  9  11
+            // just math magic ...
+            squares.add(square);
+            square += diff;
+            diff += 2;
+        }
+        return squares;
+    }
 
 
+    public int numSquares(int n) {
+        List<Integer> squares = generateSquares2(n);
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(n);
+        int ans = 0;
+        boolean[] marked = new boolean[n+1];
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            ans++;
+            while (size-- > 0) {
+                int cur = queue.poll();
+                for (Integer square : squares) {
+                    int nextN = cur - square;
+                    if (nextN == 0) {
+                        return ans;
+                    }
+
+                    if (nextN < 0) { // n - square This node has no edge to go..
+                        break;
+                    }
+                    // N -> 0
+                    // if N = 15 nextN is 6 2 1 ... and other edge or path is forbidden...
+                    // 1 4 9 16 25 36
+                    // nextN must not same ?? why ??
+                    // if nextN = 1 1 1 1 1 1
+                    // performance code here ..
+                    if (marked[nextN]) { // has same edge, why continue ? solution for duplicated computation. reduce queue add times.
+                        continue;
+                    }
+                    marked[nextN] = true;
+                    queue.add(nextN);
+                }
+            }
+        }
+        return  -1;
+    }
+
+    private List<Integer> generateSquares2(int n) {
+        List<Integer> squares = new ArrayList<>();
+        int square = 1;
+        int diff = 3;
+        while (square <= n) {
+            squares.add(square);
+            square  += diff;
+            diff += 2;
+        }
+        return squares;
+    }
     // 3. 最短单词路径
     // 127. Word Ladder (Medium)
 
