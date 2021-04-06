@@ -3513,23 +3513,174 @@ class Solution {
         }
         return squares;
     }
+
     // 3. 最短单词路径
     // 127. Word Ladder (Medium)
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        wordList.add(beginWord);
+        int N = wordList.size();
+        int start = N - 1;
+        int end = 0;
+        while (end < N && !wordList.get(end).equals(endWord)) {
+            end++;
+        }
+        if (end == N) {
+            return 0;
+        }
+        List<Integer>[] graphic = buildGraphic(wordList);
+        return getShortestPath(graphic, start, end);
+    }
 
+    private List<Integer>[] buildGraphic(List<String> wordList) {
+        int N = wordList.size();
+        List<Integer>[] graphic = new List[N];
+        for (int i = 0; i < N; i++) {
+            graphic[i] = new ArrayList<>();
+            for (int j = 0; j < N; j++) {
+                if (isConnect(wordList.get(i), wordList.get(j))) {
+                    graphic[i].add(j);
+                }
+            }
+        }
+        return graphic;
+    }
+
+    private boolean isConnect(String s1, String s2) {
+        int diffCnt = 0;
+        for (int i = 0; i < s1.length() && diffCnt <= 1; i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                diffCnt++;
+            }
+        }
+        return diffCnt == 1;
+    }
+
+    private int getShortestPath(List<Integer>[] graphic, int start, int end) {
+        Queue<Integer> queue = new LinkedList<>();
+        boolean[] marked = new boolean[graphic.length];
+        queue.add(start);
+        marked[start] = true;
+        int path = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            path++;
+            while (size-- > 0) {
+                int cur = queue.poll();
+                for (int next : graphic[cur]) {
+                    if (next == end) {
+                        return path;
+                    }
+                    if (marked[next]) {
+                        continue;
+                    }
+                    marked[next] = true;
+                    queue.add(next);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+
+    }
 
 
     // DFS
     // 1. 查找最大的连通面积
     // 695. Max Area of Island (Medium)
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    int width;
+    int height;
+    public int maxAreaOfIsland(int[][] grid) {
+        width = grid.length;
+        height = grid[0].length;
+        int ans = 0;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                ans = Math.max(ans, dfs(grid, i, j));
+            }
+        }
+        return ans;
+    }
 
+    private int dfs(int[][] grid, int w, int h) {
+        if (w < 0 || w >= width || h < 0 || h >= height || grid[w][h] == 0) {
+            return 0;
+        }
+        grid[w][h] = 0;
+        int area = 1;
+        for (int[] d : directions) {
+            area += dfs(grid, w + d[0], h + d[1]);
+        }
+        return area;
+    }
 
     // 2. 矩阵中的连通分量数目
     // 200. Number of Islands (Medium)
+    int width;
+    int height;
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    public int numIslands(char[][] grid) {
+        // m == grid.length
+        // n == grid[i].length
+        // 1 <= m, n <= 300
+        // grid[i][j] 的值为 '0' 或 '1'
+        width = grid.length;
+        height = grid[0].length;
+        int ans = 0;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                ans += dfs(grid, i, j)!=0?1:0;
+            }
+        }
+        return ans;
+    }
 
+
+    private int dfs(char[][] grid, int w, int h) {
+        // This if to block the un-connected area. let others run by next for-for..
+        if (w < 0 || w >= width || h < 0 || h >= height || grid[w][h] == '0') {
+            return 0;
+        }
+
+        grid[w][h] = '0';
+        int area = 1;
+        for (int[] d : directions) {
+            area += dfs(grid, w + d[0], h + d[1]);
+        }
+        return area;
+    }
 
     // 3. 好友关系的连通分量数目
     // 547. Friend Circles (Medium)
+    int width;
+    int height;
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    public int findCircleNum(int[][] isConnected) {
+        width = isConnected.length;
+        height = isConnected[0].length;
+        int ans = 0;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                ans += dfs(isConnected, i, j)!=0?1:0;
+            }
+        }
+        return ans;
+    }
+    private int dfs(int[][] grid, int w, int h) {
+        // This if to block the un-connected area. let others run by next for-for..
+        if (w < 0 || w >= width || h < 0 || h >= height || grid[w][h] == '0') {
+            return 0;
+        }
 
+        grid[w][h] = 0;
+        int area = 1;
+        for (int[] d : directions) {
+            area += dfs(grid, w + d[0], h + d[1]);
+        }
+        return area;
+    }
 
     // 4. 填充封闭区域
     // 130. Surrounded Regions (Medium)
