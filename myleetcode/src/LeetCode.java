@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.omg.PortableInterceptor.INACTIVE;
 
 import javax.swing.tree.TreeNode;
 import java.util.*;
@@ -3593,10 +3592,10 @@ class Solution {
     int width;
     int height;
     public int maxAreaOfIsland(int[][] grid) {
-        width = grid.length;
+        N = grid.length;
         height = grid[0].length;
         int ans = 0;
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i < N; i++) {
             for (int j = 0; j < height; j++) {
                 ans = Math.max(ans, dfs(grid, i, j));
             }
@@ -3605,7 +3604,7 @@ class Solution {
     }
 
     private int dfs(int[][] grid, int w, int h) {
-        if (w < 0 || w >= width || h < 0 || h >= height || grid[w][h] == 0) {
+        if (w < 0 || w >= N || h < 0 || h >= height || grid[w][h] == 0) {
             return 0;
         }
         grid[w][h] = 0;
@@ -3654,47 +3653,211 @@ class Solution {
 
     // 3. 好友关系的连通分量数目
     // 547. Friend Circles (Medium)
-    int width;
-    int height;
     int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-    public int findCircleNum(int[][] isConnected) {
-        width = isConnected.length;
-        height = isConnected[0].length;
+    int N;
+    boolean[] visited;
+    public int findCircleNum(int[][] grid) {
+        N = grid.length;
+        visited = new boolean[N];
         int ans = 0;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                ans += dfs(isConnected, i, j)!=0?1:0;
+        for (int i = 0; i < N; i++) {
+            if (visited[i]) {
+                continue;
             }
+            // Key Logic, to make visited array filled..
+            dfs(grid, i);
+            ans++;
         }
         return ans;
     }
-    private int dfs(int[][] grid, int w, int h) {
-        // This if to block the un-connected area. let others run by next for-for..
-        if (w < 0 || w >= width || h < 0 || h >= height || grid[w][h] == '0') {
-            return 0;
-        }
 
-        grid[w][h] = 0;
-        int area = 1;
-        for (int[] d : directions) {
-            area += dfs(grid, w + d[0], h + d[1]);
+    private void dfs(int[][] grid, int w) {
+        visited[w] = true;
+        for (int i = 0; i < N; i++) {
+            if (grid[w][i]==1 && !visited[i]){
+                dfs(grid, i);
+            }
         }
-        return area;
     }
 
     // 4. 填充封闭区域
     // 130. Surrounded Regions (Medium)
 
+    int width;
+    int height;
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    // KEY Solution 先填充外围，再填充内部。
+    public void solve(char[][] grid) {
+        width = grid.length;
+        height = grid[0].length;
+
+        for (int i = 0; i < width; i++) {
+            dfs(grid, i, 0);
+            dfs(grid, i, height-1);
+        }
+        for (int i = 0; i < height; i++) {
+            dfs(grid, 0, i);
+            dfs(grid, width-1, i);
+        }
+        // int ans = 0;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (grid[i][j] == 'O') {
+                    grid[i][j] = 'X';
+                }
+            }
+        }
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (grid[i][j] == 'T') {
+                    grid[i][j] = 'O';
+                }
+            }
+        }
+        // return ans;
+    }
+
+    private void dfs(char[][] grid, int w, int h) {
+        // This if to block the un-connected area. let others run by next for-for..
+        if (w < 0 || w >= width || h < 0 || h >= height || grid[w][h] == 'X' || grid[w][h] == 'T') {
+            return;
+        }
+        grid[w][h] = 'T';
+        // int area = 1;
+        for (int[] d : directions) {
+            // area += dfs(grid, w + d[0], h + d[1]);
+            dfs(grid, w + d[0], h + d[1]);
+        }
+        // return area;
+    }
+
 
 
     // 5. 能到达的太平洋和大西洋的区域
     // 417. Pacific Atlantic Water Flow (Medium)
+    int m, n;
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    public List<List<Integer>> pacificAtlantic(int[][] matrix) {
+        List<List<Integer>> ans = new ArrayList<>();
+
+        m = matrix.length;
+        n = matrix[0].length;
+        boolean[][] canReachP = new boolean[m][n];
+        boolean[][] canReachA = new boolean[m][n];
+
+
+        for (int i = 0; i < m; i++) {
+            dfs(matrix, i, 0, canReachA);
+            dfs(matrix, i, n-1, canReachP);
+        }
+        for (int i = 0; i < n; i++) {
+            dfs(matrix, 0, i, canReachA);
+            dfs(matrix, m-1, i, canReachP);
+        }
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (canReachA[i][j] && canReachP[i][j]) {
+                    List<Integer> s = new ArrayList<>();
+                    s.add(i);
+                    s.add(j);
+                    ans.add(s);
+                }
+            }
+        }
+        return ans;
+    }
+
+    private void dfs(int[][] grid, int a, int b, boolean[][] canReach) {
+        if (canReach[a][b])  return;
+        canReach[a][b] = true;
+        // grid[a][b] = 0;
+        // int area = 1;
+        for (int[] d : directions) {
+            // area += dfs(grid, a + d[0], b + d[1]);
+            int a1 = a + d[0];
+            int b1 = b + d[1];
+            if (!(a1 < 0 || a1 >= m || b1 < 0 || b1 >= n || grid[a1][b1] < grid[a][b])) {
+                dfs(grid, a1, b1, canReach);
+            }
+        }
+        // return area;
+    }
 
 
     // Backtracking
     // Backtracking（回溯）属于 DFS。
+    // Backtracking（回溯）属于 DFS。
+    // 普通 DFS 主要用在 可达性问题 ，这种问题只需要执行到特点的位置然后返回即可。
+    // 而 Backtracking 主要用于求解 排列组合 问题，例如有 { 'a','b','c' } 三个字符，
+    // 求解所有由这三个字符排列得到的字符串，这种问题在执行到特定的位置返回之后还会继续执行求解过程。
+
     // 1. 数字键盘组合
     // 17. Letter Combinations of a Phone Number (Medium)
+    private static final String[] KEYS = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    List<String> ans = new ArrayList<>();
+    public List<String> letterCombinations(String digits) {
+        char[] charArray = digits.toCharArray();
+        // for (int i = 0; i < charArray.length; i++) {
+        //     StringBuilder sb = new StringBuilder();
+        //     ans.add(backTracking(charArray, i, sb));
+        // }
+        backTracking(charArray, new StringBuilder());
+        return ans;
+    }
+
+    public void backTracking(char[] c, StringBuilder sb) {
+        if (sb.length() == c.length) {
+            ans.add(sb.toString());
+            return;
+        }
+        nt intValue = c[sb.length()] - '0';
+        String letters = KEYS[intValue];
+        char[] charArray = letters.toCharArray();
+        for (char ca : charArray) {
+            sb.append(ca);
+            backTracking(c, sb);
+            sb.deleteCharAt(sb.length()-1);
+        }
+    }
+
+
+
+
+
+    private static final String[] KEYS = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    public List<String> letterCombinations(String digits) {
+        List<String> ans = new ArrayList<>();
+        char[] charArray = digits.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            StringBuilder sb = new StringBuilder();
+            ans.add(backTracking(charArray, i, sb));
+        }
+        return ans;
+    }
+
+    public String backTracking(char[] c,  int i, StringBuilder sb) {
+
+        if (i >= c.length) {
+            return sb.toString();
+        }
+        int intValue = c[i] - '0';
+        if (intValue < 2 || intValue > 9) {
+            return sb.toString();
+        }
+        char[] charArray = KEYS[intValue].toCharArray();
+        for (int i1 = 0; i1 < charArray.length; i1++) {
+            sb.append(charArray[i1]);
+            for (int i2 = i+1; i2 < c.length; i2++) {
+                sb.append(backTracking(c, i2, sb));
+            }
+            sb.deleteCharAt(sb.length()-1);
+        }
+
+        return sb.toString();
+    }
+
+
 
     // 2. IP 地址划分
     // 93. Restore IP Addresses(Medium)
