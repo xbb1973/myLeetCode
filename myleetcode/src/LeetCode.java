@@ -1,3 +1,4 @@
+import com.sun.xml.internal.ws.util.StringUtils;
 import javafx.util.Pair;
 
 import javax.swing.tree.TreeNode;
@@ -3857,6 +3858,30 @@ class Solution {
         return sb.toString();
     }
 
+    // add new restart ~~~~
+    // try to loving coding.
+    String[] KEY_LIST = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    public List<String> letterCombinations(String digits) {
+        ArrayList<String> ans = new ArrayList<>();
+        if (digits == null || digits.isEmpty()) {
+            return ans;
+        }
+
+        backTracking(digits.toCharArray(), ans, new StringBuilder());
+
+        return ans;
+    }
+
+    public void backTracking(char[] chars, List<String> ans, StringBuilder stringBuilder) {
+        if (stringBuilder.length() == chars.length) {
+            ans.add(stringBuilder.toString());
+        }
+
+        for (int i = 0; i < chars.length; i++) {
+            KEY_LIST[chars[i] - 'a'];
+        }
+
+    }
 
 
     // 2. IP 地址划分
