@@ -3812,7 +3812,7 @@ class Solution {
             ans.add(sb.toString());
             return;
         }
-        nt intValue = c[sb.length()] - '0';
+        int intValue = c[sb.length()] - '0';
         String letters = KEYS[intValue];
         char[] charArray = letters.toCharArray();
         for (char ca : charArray) {
@@ -3820,42 +3820,6 @@ class Solution {
             backTracking(c, sb);
             sb.deleteCharAt(sb.length()-1);
         }
-    }
-
-
-
-
-
-    private static final String[] KEYS = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
-    public List<String> letterCombinations(String digits) {
-        List<String> ans = new ArrayList<>();
-        char[] charArray = digits.toCharArray();
-        for (int i = 0; i < charArray.length; i++) {
-            StringBuilder sb = new StringBuilder();
-            ans.add(backTracking(charArray, i, sb));
-        }
-        return ans;
-    }
-
-    public String backTracking(char[] c,  int i, StringBuilder sb) {
-
-        if (i >= c.length) {
-            return sb.toString();
-        }
-        int intValue = c[i] - '0';
-        if (intValue < 2 || intValue > 9) {
-            return sb.toString();
-        }
-        char[] charArray = KEYS[intValue].toCharArray();
-        for (int i1 = 0; i1 < charArray.length; i1++) {
-            sb.append(charArray[i1]);
-            for (int i2 = i+1; i2 < c.length; i2++) {
-                sb.append(backTracking(c, i2, sb));
-            }
-            sb.deleteCharAt(sb.length()-1);
-        }
-
-        return sb.toString();
     }
 
     // add new restart ~~~~
@@ -3875,17 +3839,25 @@ class Solution {
     public void backTracking(char[] chars, List<String> ans, StringBuilder stringBuilder) {
         if (stringBuilder.length() == chars.length) {
             ans.add(stringBuilder.toString());
+            return;
         }
 
-        for (int i = 0; i < chars.length; i++) {
-            KEY_LIST[chars[i] - 'a'];
+        String s = KEY_LIST[chars[stringBuilder.length()] - '0'];
+        char[] chars1 = s.toCharArray();
+        for (int j = 0; j < chars1.length; j++) {
+            // in
+            stringBuilder.append(chars1[j]);
+            backTracking(chars, ans, stringBuilder);
+            // out
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
-
     }
 
 
     // 2. IP 地址划分
     // 93. Restore IP Addresses(Medium)
+
+
 
     // 3. 在矩阵中寻找字符串
     // 79. Word Search (Medium)
