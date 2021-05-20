@@ -3856,8 +3856,22 @@ class Solution {
 
     // 2. IP 地址划分
     // 93. Restore IP Addresses(Medium)
+    public List<String> restoreIpAddresses(String s) {
+        ArrayList<String> ans = new ArrayList<>();
+        if (s == null || s.isEmpty()) {
+            return ans;
+        }
+        backTracking(s.toCharArray(), ans, new StringBuilder());
+    }
+
+    public void backTracking(char[] chars, List<String> ans, StringBuilder stringBuilder) {
+        if () {
+            ans.add(stringBuilder);
+            return;
+        }
 
 
+    }
 
     // 3. 在矩阵中寻找字符串
     // 79. Word Search (Medium)
