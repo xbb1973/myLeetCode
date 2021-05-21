@@ -3861,16 +3861,42 @@ class Solution {
         if (s == null || s.isEmpty()) {
             return ans;
         }
-        backTracking(s.toCharArray(), ans, new StringBuilder());
+        backTracking(s, ans, new ArrayList<>(), 0);
+        return ans;
     }
 
-    public void backTracking(char[] chars, List<String> ans, StringBuilder stringBuilder) {
-        if () {
-            ans.add(stringBuilder);
+    // FIXME Use Substirng as parameter.
+    public void backTracking(String s, List<String> ans, List<Integer> addr, int beginIndex) {
+        if (beginIndex == s.length() && addr.size() == 4) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < addr.size(); i++) {
+                Integer integer = addr.get(i);
+                if (i != 0){
+                    stringBuilder.append(".");
+                }
+                stringBuilder.append(integer);
+            }
+            ans.add(stringBuilder.toString());
             return;
         }
 
+        for (int i = beginIndex; i < s.length(); i++) {
+            int endIndex = i+1;
+            int addrNum = Integer.parseInt(s.substring(beginIndex, endIndex));
 
+            if (addrNum == 0 && i-beginIndex>1) {
+                break;
+            }
+
+            if (addrNum <= 255 && addrNum >= 0) {
+                addr.add(addrNum);
+                beginIndex = endIndex;
+                backTracking(s, ans, addr, beginIndex);
+                addr.remove(addr.size()-1);
+            } else {
+                break;
+            }
+        }
     }
 
     // 3. 在矩阵中寻找字符串
