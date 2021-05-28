@@ -3861,41 +3861,35 @@ class Solution {
         if (s == null || s.isEmpty()) {
             return ans;
         }
-        backTracking(s, ans, new ArrayList<>(), 0);
+        backTracking(s, ans, new StringBuilder(), 0);
         return ans;
     }
 
     // FIXME Use Substirng as parameter.
-    public void backTracking(String s, List<String> ans, List<Integer> addr, int beginIndex) {
-        if (beginIndex == s.length() && addr.size() == 4) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < addr.size(); i++) {
-                Integer integer = addr.get(i);
-                if (i != 0){
-                    stringBuilder.append(".");
-                }
-                stringBuilder.append(integer);
+    public void backTracking(String s, List<String> ans, StringBuilder stringBuilder, int k) {
+        if (k == 4 || s.isEmpty()) {
+            if (k == 4 && s.isEmpty()) {
+                ans.add(stringBuilder.toString());
             }
-            ans.add(stringBuilder.toString());
             return;
         }
 
-        for (int i = beginIndex; i < s.length(); i++) {
-            int endIndex = i+1;
-            int addrNum = Integer.parseInt(s.substring(beginIndex, endIndex));
-
-            if (addrNum == 0 && i-beginIndex>1) {
+        int length = s.length();
+        for (int i = 1; i <= 3 || i <= length; i++) {
+            if (s.charAt(0) == '0' && i != 1) {
                 break;
             }
-
-            if (addrNum <= 255 && addrNum >= 0) {
-                addr.add(addrNum);
-                beginIndex = endIndex;
-                backTracking(s, ans, addr, beginIndex);
-                addr.remove(addr.size()-1);
-            } else {
+            StringBuilder subAddr = new StringBuilder(s.substring(0, i));
+            if (Integer.parseInt(subAddr.toString()) > 255) {
                 break;
             }
+            if (k != 3) {
+                subAddr.append(".");
+            }
+
+            stringBuilder.append(subAddr);
+            backTracking(s.substring(i), ans, stringBuilder, k+1);
+            stringBuilder.delete(stringBuilder.length() - subAddr.length(), stringBuilder.length());
         }
     }
 
