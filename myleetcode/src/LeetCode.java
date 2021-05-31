@@ -4050,12 +4050,213 @@ class Solution {
 
     // 5. 排列
     // 46. Permutations (Medium)
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> permute(int[] nums) {
+        boolean[] booleans = new boolean[nums.length];
+        backTracking(nums, new ArrayList<Integer>(), booleans);
+        return ans;
+    }
+
+    private void backTracking(int[] nums, ArrayList<Integer> integers, boolean[] booleans) {
+        if (integers.size() == nums.length) {
+            // ans.add(integers); this code will cause return null, because integers will remove to nothing
+            ans.add(new ArrayList<>(integers)); // key point, return new ...
+            return;
+        }
+        for (int k = 0; k < nums.length; k++) { // key point , backtracking in loop
+            if (booleans[k]) {
+                continue;
+            }
+
+            // in
+            integers.add(nums[k]);
+            booleans[k] = true;
+
+            backTracking(nums, integers, booleans);
+
+            // out
+            integers.remove(integers.size()-1);
+            booleans[k] = false;
+        }
+    }
 
     // 6. 含有相同元素求排列
     // 47. Permutations II (Medium)
 
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        Arrays.sort(nums); // key point, sort 1st
+        backTracking(nums, new ArrayList<>(), new boolean[nums.length]);
+        return ans;
+    }
+
+    private void backTracking(int[] nums, ArrayList<Integer> integers, boolean[] booleans) {
+        if (integers.size() == nums.length) {
+            // ans.add(integers); this code will cause return null
+            ans.add(new ArrayList<>(integers)); // key point, return new ...
+            return;
+        }
+        for (int k = 0; k < nums.length; k++) { // key point , backtracking in loop
+            if (k != 0 && (nums[k-1] == nums[k]) && booleans[k-1]) { // key point, check unique case.
+                continue;
+            }
+            if (booleans[k]) {
+                continue;
+            }
+
+            // in
+            integers.add(nums[k]);
+            booleans[k] = true;
+
+            backTracking(nums, integers, booleans);
+
+            // out
+            integers.remove(integers.size()-1);
+            booleans[k] = false;
+        }
+    }
+
     // 7. 组合
     // 77. Combinations (Medium)
+    // 全排列
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combine(int n, int k) {
+        backTracking(n, k, new boolean[n+1], new ArrayList<Integer>());
+        return ans;
+    }
+
+    private void backTracking(int n, int k, boolean[] booleans, List<Integer> list) {
+        if (k==0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        // 未剪枝 全排列
+        for (int i = 1; i <= n; i++) {
+            if (booleans[i]) {
+                continue;
+            }
+            list.add(i);
+            booleans[i] = true;
+            k--;
+            backTracking(n, k, booleans, list);
+            list.remove(list.size()-1);
+            booleans[i] = false;
+            k++;
+        }
+    }
+
+    // AC
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combine(int n, int k) {
+        backTracking(n, k, new boolean[n+1], new ArrayList<Integer>(), 1);
+        return ans;
+    }
+
+    private void backTracking(int n, int k, boolean[] booleans, List<Integer> list, int start) {
+        // 优化 1，不用k--，这样还要额外对k进行回溯
+        if (k==0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        // 剪枝 此方法需要原来的是有序的
+        // 优化 2，不用visited，按顺序走，因为不需要全排列
+        for (int i = start; i <= n; i++) {
+            if (booleans[i]) {
+                continue;
+            }
+            list.add(i);
+            booleans[i] = true;
+            k--;
+            backTracking(n, k, booleans, list, i);
+            list.remove(list.size()-1);
+            booleans[i] = false;
+            k++;
+        }
+    }
+
+    // Best AC
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> combinations = new ArrayList<>();
+        List<Integer> combineList = new ArrayList<>();
+        backtracking(combineList, combinations, 1, k, n);
+        return combinations;
+    }
+
+    private void backtracking(List<Integer> combineList, List<List<Integer>> combinations, int start, int k, final int n) {
+        if (k == 0) {
+            combinations.add(new ArrayList<>(combineList));
+            return;
+        }
+        for (int i = start; i <= n - k + 1; i++) {  // 剪枝 // key point why?
+            combineList.add(i);
+            backtracking(combineList, combinations, i + 1, k - 1, n);
+            combineList.remove(combineList.size() - 1);
+        }
+    }
+
+    // 优化 版本 1 本质就是DFS
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combine(int n, int k) {
+        backTracking(n, k, new boolean[n+1], new ArrayList<Integer>(), 1);
+        return ans;
+    }
+
+    private void backTracking(int n, int k, boolean[] booleans, List<Integer> list, int start) {
+        // if (k==0) {
+        //     ans.add(new ArrayList<>(list));
+        //     return;
+        // }
+        if (k==list.size()) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = start; i <= n; i++) {
+            // if (booleans[i]) {
+            //     continue;
+            // }
+            list.add(i);
+            // booleans[i] = true;
+            // k--;
+            // backTracking(n, k, booleans, list, i);
+            backTracking(n, k, booleans, list, i+1);
+            list.remove(list.size()-1);
+            // booleans[i] = false;
+            // k++;
+        }
+    }
+    // 优化 版本 2 在DFS基础上 进行剪枝 容易理解
+    // 剪枝就是因为从start 到 n 有些区间实际上不行到
+    // k 也需要同时改变 若不加入回溯 则不可以改变原值 仅修改入参数
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combine(int n, int k) {
+        backTracking(n, k, new boolean[n+1], new ArrayList<Integer>(), 1);
+        return ans;
+    }
+
+    private void backTracking(int n, int k, boolean[] booleans, List<Integer> list, int start) {
+        if (k==0) { // k need change
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        // if (k==list.size()) {
+        //     ans.add(new ArrayList<>(list));
+        //     return;
+        // }
+        // 剪枝就是因为从start 到 n 有些区间实际上不行到
+        for (int i = start; i <= n - k + 1; i++) {
+            // if (booleans[i]) {
+            //     continue;
+            // }
+            list.add(i);
+            // booleans[i] = true;
+            k--;
+            // backTracking(n, k-1, booleans, list, i); use k-1 instead also ac.
+            backTracking(n, k, booleans, list, i+1);
+            list.remove(list.size()-1);
+            // booleans[i] = false;
+            k++;
+        }
+    }
 
     // 8. 组合求和
     // 39. Combination Sum (Medium)
