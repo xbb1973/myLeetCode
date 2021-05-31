@@ -3925,7 +3925,7 @@ class Solution {
             return false;
         }
         char c = board[i][j];
-        System.out.println(c);
+//        System.out.println(c); // cause over time
         visited[i][j] = true;
         for (int[] direction : Direactionn) {
             if (backTracking(board, i + direction[0], j + direction[1], word.substring(1))) {
@@ -3989,6 +3989,64 @@ class Solution {
 
     // 4. 输出二叉树中所有从根到叶子的路径
     // 257. Binary Tree Paths (Easy)
+
+    // DFS Logic
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> ans = new ArrayList<>();
+        DFS(ans, root, new StringBuilder());
+        return ans;
+    }
+    private void DFS(List<String> ans, TreeNode pop, StringBuilder stringBuilder) {
+
+        StringBuilder tmpPath = new StringBuilder();
+        if (pop.left == null && pop.right == null) {
+            tmpPath.append(pop.val);
+            stringBuilder.append(tmpPath.toString());
+            ans.add(stringBuilder.toString());
+        } else {
+            tmpPath.append(pop.val);
+            tmpPath.append("->");
+            stringBuilder.append(tmpPath.toString());
+        }
+
+        if (pop.left != null) {
+            DFS(ans, pop.left, new StringBuilder(stringBuilder.toString()));
+        }
+        if (pop.right != null) {
+            DFS(ans, pop.right, new StringBuilder(stringBuilder.toString()));
+        }
+    }
+
+    // Backtracking Logic
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> ans = new ArrayList<>();
+        DFS(ans, root, new StringBuilder());
+        return ans;
+    }
+    private void DFS(List<String> ans, TreeNode pop, StringBuilder stringBuilder) {
+
+        StringBuilder tmpPath = new StringBuilder();
+        // in
+        if (pop.left == null && pop.right == null) {
+            tmpPath.append(pop.val);
+            stringBuilder.append(tmpPath.toString());
+            ans.add(stringBuilder.toString());
+        } else {
+            tmpPath.append(pop.val);
+            tmpPath.append("->");
+            stringBuilder.append(tmpPath.toString());
+        }
+
+        if (pop.left != null) {
+            DFS(ans, pop.left, stringBuilder);
+        }
+        if (pop.right != null) {
+            DFS(ans, pop.right, stringBuilder);
+        }
+        // out
+        // key point, can use List<Integer> node to replace StringBuilder..
+        stringBuilder.delete(stringBuilder.length()-tmpPath.length(), stringBuilder.length());
+    }
 
     // 5. 排列
     // 46. Permutations (Medium)
