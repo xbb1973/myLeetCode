@@ -4260,16 +4260,128 @@ class Solution {
 
     // 8. 组合求和
     // 39. Combination Sum (Medium)
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        backTracking(new ArrayList<Integer>(), candidates, target);
+        return ans;
+    }
+
+    private void backTracking(List<Integer> list, int[] candidates, int target) {
+        if (target == 0){
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+
+        for (int i = 0; i < candidates.length; i++) {
+            int chose = candidates[i];
+            if (chose > target) {
+                continue;
+            }
+            // 优化点 这里增加start 不允许 重复分叉
+            if (list.size() > 0 && chose < list.get(list.size()-1)) {
+                continue;
+            }
+            list.add(chose);
+            backTracking(list, candidates, target-chose);
+            list.remove(list.size() - 1);
+        }
+    }
+
+
+    // 优化 不允许重复分叉 进行剪枝
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        backTracking(new ArrayList<Integer>(), candidates, target, 0);
+        return ans;
+    }
+
+    private void backTracking(List<Integer> list, int[] candidates, int target, int start) {
+        if (target == 0){
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+
+        for (int i = start; i < candidates.length; i++) {
+            int chose = candidates[i];
+            if (chose > target) {
+                continue;
+            }
+            list.add(chose);
+            backTracking(list, candidates, target-chose, i);
+            list.remove(list.size() - 1);
+        }
+    }
 
     // 9. 含有相同元素的组合求和
     // 40. Combination Sum II (Medium)
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        backTracking(new ArrayList<Integer>(), candidates, target, 0, new boolean[candidates.length]);
+        return ans;
+    }
+
+    private void backTracking(List<Integer> list, int[] candidates, int target, int start, boolean[] visited) {
+        if (target == 0){
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+
+        for (int i = start; i < candidates.length; i++) {
+            if (visited[i]) { // 可以省略 因为有 start
+                continue;
+            }
+            int chose = candidates[i];
+            if (i != 0 && (chose == candidates[i-1]) && !visited[i-1]) { // key point 这里需要的还真是 !visited 首先排序 其次前者肯定dfs过 所以要屏蔽
+                continue;
+            }
+            if (chose > target) {
+                continue;
+            }
+            list.add(chose);
+            visited[i] = true;
+            backTracking(list, candidates, target-chose, i+1, visited);
+            list.remove(list.size() - 1);
+            visited[i] = false;
+        }
+    }
 
     // 10. 1-9 数字的组合求和
     // 216. Combination Sum III (Medium)
+    //找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        int[] candidates = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        backTracking(new ArrayList<Integer>(), candidates, n, 0, k);
+        return ans;
+    }
+    private void backTracking(List<Integer> list, int[] candidates, int target, int start, int k) {
+        if (k == 0) {
+            if (target == 0){
+                ans.add(new ArrayList<>(list));
+                return;
+            }
+            return;
+        }
+
+        for (int i = start; i < candidates.length; i++) {
+            int chose = candidates[i];
+            if (chose > target) {
+                continue;
+            }
+            list.add(chose);
+            backTracking(list, candidates, target-chose, i+1, k-1);
+            list.remove(list.size() - 1);
+        }
+    }
 
     // 11. 子集
     // 78. Subsets (Medium)
+    //输入：nums = [1,2,3]
+    //输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+    public List<List<Integer>> subsets(int[] nums) {
 
+    }
 
     // 12. 含有相同元素求子集
     // 90. Subsets II (Medium)
