@@ -4379,11 +4379,34 @@ class Solution {
     // 78. Subsets (Medium)
     //输入：nums = [1,2,3]
     //输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+    List<List<Integer>> ans = new ArrayList<>();
     public List<List<Integer>> subsets(int[] nums) {
 
+        backTracking(new ArrayList<Integer>(), -1, nums, new boolean[nums.length]);
+        return ans;
     }
 
-    // 12. 含有相同元素求子集
+    private void backTracking(ArrayList<Integer> integers, int number, int[] nums, boolean[] visited) {
+        if (number == -1) {
+            ans.add(new ArrayList<>(integers));
+        } else {
+            ans.add(new ArrayList<>(integers));
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            if (visited[i]) {
+                return;
+            }
+            int num = nums[i];
+            integers.add(num);
+            visited[i] = true;
+            backTracking(integers, num, nums, visited);
+            integers.remove(integers.size()-1);
+            visited[i] = false;
+        }
+    }
+
+    // 12. 含有相同元素求子
     // 90. Subsets II (Medium)
 
     // 13. 分割字符串使得每个部分都是回文数
