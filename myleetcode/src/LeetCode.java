@@ -4406,11 +4406,101 @@ class Solution {
         }
     }
 
+    // 按照子集size作为退出条件
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> subsets(int[] nums) {
+        // 以size作为每次循环的增量
+        for (int i = 0; i <= nums.length; i++) {
+            backTracking(new ArrayList<Integer>(), 0, nums, i);
+        }
+        return ans;
+    }
+
+    private void backTracking(ArrayList<Integer> integers, int start, int[] nums, int k) {
+        if (integers.size() == k) {
+            ans.add(new ArrayList<>(integers));
+            return;
+        }
+        // start 防止重复
+        for (int i = start; i < nums.length; i++) {
+            int num = nums[i];
+            integers.add(num);
+            backTracking(integers, i+1, nums, k);
+            integers.remove(integers.size()-1);
+        }
+    }
+
+
     // 12. 含有相同元素求子
     // 90. Subsets II (Medium)
 
+    List<List<Integer>> ans = new ArrayList<>();
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        // 以size作为每次循环的增量
+        for (int i = 0; i <= nums.length; i++) {
+            backTracking(new ArrayList<Integer>(), 0, nums, i, new boolean[nums.length]);
+        }
+        return ans;
+    }
+
+    private void backTracking(ArrayList<Integer> integers, int start, int[] nums, int k, boolean[] visited) {
+        if (integers.size() == k) {
+            ans.add(new ArrayList<>(integers));
+            return;
+        }
+        // start 防止重复
+        for (int i = start; i < nums.length; i++) {
+            if (i != 0 && nums[i-1] == nums[i] && !visited[i-1]) {
+                continue;
+            }
+            if (visited[i]) {
+                continue;
+            }
+            int num = nums[i];
+            visited[i] = true;
+            integers.add(num);
+            backTracking(integers, i+1, nums, k);
+            integers.remove(integers.size()-1);
+            visited[i] = false;
+        }
+    }
+
+
     // 13. 分割字符串使得每个部分都是回文数
     // 131. Palindrome Partitioning (Medium)
+
+    List<List<String>> ans = new ArrayList<>();
+    public List<List<String>> partition(String s) {
+        backTracking(new ArrayList<String>(), s);
+        return ans;
+    }
+
+
+    private void backTracking(ArrayList<String> paString, String s) {
+        if (s.length() == 0) {
+            ans.add(new ArrayList<String>(paString));
+            return;
+        }
+        // start 防止重复
+        for (int i = 0; i < s.length(); i++) {
+            if (isPaString(s, 0, i)) {
+                paString.add(s.substring(0,i+1));
+                backTracking(paString, s.substring(i+1));
+                paString.remove(paString.size() - 1);
+            }
+        }
+    }
+
+    private boolean isPaString(String s, int begin, int end) {
+        while (begin < end) {
+            if (s.charAt(begin++) != s.charAt(end--)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     // 14. 数独
     // 37. Sudoku Solver (Hard)
