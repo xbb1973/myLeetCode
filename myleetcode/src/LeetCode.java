@@ -4549,19 +4549,18 @@ class Solution {
         // 是空则尝试填充, 否则跳过继续尝试填充下一个位置
         if(board[row][col] == '.') {
             // 尝试填充1~9
-            for(int num = 1; num <= 9; num++){
+            for(int num = 0; num < 9; num++){
                 boolean canUsed = !(rowUsed[row][num] || colUsed[col][num] || boxUsed[row/3][col/3][num]);
                 if(canUsed){
                     rowUsed[row][num] = true;
                     colUsed[col][num] = true;
                     boxUsed[row/3][col/3][num] = true;
 
-                    board[row][col] = (char)('0' + num);
-                    if(backTracking(board, row, col + 1);){
+                    board[row][col] = (char)('1' + num);
+                    if(backTracking(board, row, col + 1)){
                         return true;
                     }
                     board[row][col] = '.';
-
                     rowUsed[row][num] = false;
                     colUsed[col][num] = false;
                     boxUsed[row/3][col/3][num] = false;
@@ -4573,11 +4572,126 @@ class Solution {
         return false;
     }
 
+    // 1.三个布尔数组 表明 行, 列, 还有 3*3 的方格的数字是否被使用过
+    int rows;
+    int cols;
+    boolean[][] rowUsed;
+    boolean[][] colUsed;
+    boolean[][][] boxUsed;
+    int maxNum = 9;
+    public void solveSudoku(char[][] board) {
+        rows = board.length;
+        cols = board[0].length;
+        rowUsed = new boolean[rows][maxNum];
+        colUsed = new boolean[cols][maxNum];
+        boxUsed = new boolean[rows][cols][maxNum];
+        // 2.初始化
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                char c = board[i][j];
+                if (c != '.') {
+                    int curNum = c - '1';
+                    rowUsed[i][curNum] = true;
+                    colUsed[j][curNum] = true;
+                    boxUsed[i/3][j/3][curNum] = true;
+                }
+            }
+        }
+        // 3.递归尝试填充数组
+        backTracking(board, 0 ,0);
+    }
+
+    private boolean backTracking(char[][] board, int row, int col) {
+        // 4.退出条件
+        if (col == cols) {
+            col = 0;
+            if (++row == rows) {
+                return true;
+            }
+        }
+
+        // 5.num 9 的尝试
+        if (board[row][col] == '.') {
+            for (int i = 0; i < maxNum; i++) {
+                boolean numberUsed = rowUsed[row][i] || colUsed[col][i] || boxUsed[row/3][col/3][i];
+                if (!numberUsed) {
+                    // in
+                    board[row][col] = (char) ('1' + i);
+                    rowUsed[row][i]=true;
+                    colUsed[col][i]=true;
+                    boxUsed[row/3][col/3][i]=true;
+                    // 6.num 9 的尝试 还需要迭代看是否可达
+                    // key point , only if this path is workable ..
+                    if (backTracking(board, row, col+1)) {
+                        return true;
+                    }
+                    // out
+                    board[row][col] = '.';
+                    rowUsed[row][i]=false;
+                    colUsed[col][i]=false;
+                    boxUsed[row/3][col/3][i]=false;
+                }
+            }
+        } else {
+            // 7. 不需要尝试 go next
+            // key point , if has number go next col.
+            return backTracking(board, row, col+1);
+        }
+        return false;
+    }
 
         // 15. N 皇后
     // 51. N-Queens (Hard)
-    public List<List<String>> solveNQueens(int n) {
+    // 1 <= n <= 9
+    // 皇后彼此不能相互攻击，也就是说：任何两个皇后都不能处于同一条横行、纵行或斜线上。
 
+    boolean[] rowHasQueen;
+    boolean[] colHasQueen;
+    boolean[][] mapQueens;
+    List<List<String>> ans = new ArrayList<>();
+    public List<List<String>> solveNQueens(int n) {
+        rowHasQueen = new boolean[n];
+        colHasQueen = new boolean[n];
+        mapQueens = new boolean[n][n];
+        backTracking(n, 0, 0);
+        return ans;
+    }
+
+    private boolean backTracking(int n, int row, int col) {
+        if (col == n) {
+            col = 0;
+            if (++row == n) {
+                List<String> list = new ArrayList<>();
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < n; j++) {
+                        if (mapQueens[i][j]) {
+                            stringBuilder.append("Q");
+                        } else {
+                            stringBuilder.append(".");
+                        }
+                    }
+                    list.add(stringBuilder.toString());
+                }
+                ans.add(list);
+                return true;
+            }
+        }
+        boolean hasQueue = rowHasQueen[row] || colHasQueen[col];
+        if (!hasQueue) {
+            rowHasQueen[row] = true;
+            colHasQueen[col] = true;
+            mapQueens[row][col] = true;
+            if (backTracking(n, row, col+1)) {
+                return true;
+            }
+            rowHasQueen[row] = false;
+            colHasQueen[col] = false;
+            mapQueens[row][col] = false;
+        } else {
+            return backTracking(n, row, col+1);
+        }
+        return false;
     }
 
 
