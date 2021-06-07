@@ -1,4 +1,3 @@
-import com.sun.xml.internal.ws.util.StringUtils;
 import javafx.util.Pair;
 
 import javax.swing.tree.TreeNode;
@@ -4504,10 +4503,82 @@ class Solution {
 
     // 14. 数独
     // 37. Sudoku Solver (Hard)
+    // board.length == 9
+    // board[i].length == 9
+    // board[i][j] 是一位数字或者 '.'
+    // 题目数据 保证 输入数独仅有一个解
+    // 1.三个布尔数组 表明 行, 列, 还有 3*3 的方格的数字是否被使用过
+    int nums = 9;
+    int rows = 9;
+    int cols = 9;
+    boolean[][] rowUsed = new boolean[rows][nums];
+    boolean[][] colUsed = new boolean[cols][nums];
+    // rows/3 0 1 2  cols/3 0 1 2 ..
+    boolean[][][] boxUsed = new boolean[3][3][nums];
+//    int rows;
+//    int cols;
+    public void solveSudoku(char[][] board) {
+        rows = board.length;
+        cols = board[0].length;
 
-    // 15. N 皇后
+        // 2.初始化
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int num = board[i][j] - '1';
+                if (board[i][j] != '.') {
+                    rowUsed[i][num] = true;
+                    colUsed[j][num] = true;
+                    boxUsed[i/3][j/3][num] = true;
+                }
+            }
+        }
+
+        // 3.递归尝试填充数组
+        backTracking(board, 0 ,0);
+    }
+
+    private boolean backTracking(char[][] board, int row, int col) {
+        // 边界校验, 如果已经填充完成, 返回true, 表示一切结束
+        if(col == board[0].length){
+            col = 0;
+            row++;
+            if(row == board.length){
+                return true;
+            }
+        }
+        // 是空则尝试填充, 否则跳过继续尝试填充下一个位置
+        if(board[row][col] == '.') {
+            // 尝试填充1~9
+            for(int num = 1; num <= 9; num++){
+                boolean canUsed = !(rowUsed[row][num] || colUsed[col][num] || boxUsed[row/3][col/3][num]);
+                if(canUsed){
+                    rowUsed[row][num] = true;
+                    colUsed[col][num] = true;
+                    boxUsed[row/3][col/3][num] = true;
+
+                    board[row][col] = (char)('0' + num);
+                    if(backTracking(board, row, col + 1);){
+                        return true;
+                    }
+                    board[row][col] = '.';
+
+                    rowUsed[row][num] = false;
+                    colUsed[col][num] = false;
+                    boxUsed[row/3][col/3][num] = false;
+                }
+            }
+        } else {
+            return backTracking(board, row, col + 1);
+        }
+        return false;
+    }
+
+
+        // 15. N 皇后
     // 51. N-Queens (Hard)
+    public List<List<String>> solveNQueens(int n) {
 
+    }
 
 
 }
