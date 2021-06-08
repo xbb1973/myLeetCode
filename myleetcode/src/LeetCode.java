@@ -4637,7 +4637,7 @@ class Solution {
             // key point , if has number go next col.
             return backTracking(board, row, col+1);
         }
-        return false;
+        return false;
     }
 
         // 15. N 皇后
@@ -4648,6 +4648,7 @@ class Solution {
     boolean[] rowHasQueen;
     boolean[] colHasQueen;
     boolean[][] mapQueens;
+    int[][] directions = {{-1,1},{-1,-1},{1,1},{1,-1}};
     List<List<String>> ans = new ArrayList<>();
     public List<List<String>> solveNQueens(int n) {
         rowHasQueen = new boolean[n];
@@ -4677,7 +4678,18 @@ class Solution {
                 return true;
             }
         }
-        boolean hasQueue = rowHasQueen[row] || colHasQueen[col];
+        boolean hasQueue = rowHasQueen[row] || colHasQueen[col] || mapQueens[row][col];
+        if (!hasQueue) {
+            for (int[] direction : directions) {
+                int xieRow = row + direction[0];
+                int xieCol = col + direction[1];
+                if (xieRow >= 0 && xieRow < n && xieCol >= 0 && xieCol < n) {
+                    if (mapQueens[xieRow][xieCol]) {
+                        hasQueue = true;
+                    }
+                }
+            }
+        }
         if (!hasQueue) {
             rowHasQueen[row] = true;
             colHasQueen[col] = true;
