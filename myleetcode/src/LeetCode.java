@@ -4654,17 +4654,17 @@ class Solution {
         rowHasQueen = new boolean[n];
         colHasQueen = new boolean[n];
         mapQueens = new boolean[n][n];
-        backTracking(n, 0, 0);
+        backTracking(n, 0, 0, 0);
         return ans;
     }
 
-    private boolean backTracking(int n, int row, int col) {
-        if (col == n) {
-            col = 0;
-            if (++row == n) {
+    private void backTracking(int n, int row, int col, int k) {
+
+        if (row == n) {
+            if (k == n) {
                 List<String> list = new ArrayList<>();
-                StringBuilder stringBuilder = new StringBuilder();
                 for (int i = 0; i < n; i++) {
+                    StringBuilder stringBuilder = new StringBuilder();
                     for (int j = 0; j < n; j++) {
                         if (mapQueens[i][j]) {
                             stringBuilder.append("Q");
@@ -4675,35 +4675,106 @@ class Solution {
                     list.add(stringBuilder.toString());
                 }
                 ans.add(list);
-                return true;
             }
+            return;
         }
-        boolean hasQueue = rowHasQueen[row] || colHasQueen[col] || mapQueens[row][col];
-        if (!hasQueue) {
-            for (int[] direction : directions) {
-                int xieRow = row + direction[0];
-                int xieCol = col + direction[1];
-                if (xieRow >= 0 && xieRow < n && xieCol >= 0 && xieCol < n) {
-                    if (mapQueens[xieRow][xieCol]) {
-                        hasQueue = true;
-                    }
-                }
+
+        for (int i = 0; i < n; i++) {
+            boolean hasQueue = rowHasQueen[row] || colHasQueen[i] || mapQueens[row][i] || hypotenuseHasQueue(row, i, n);
+            if (hasQueue) {
+                continue;
             }
-        }
-        if (!hasQueue) {
             rowHasQueen[row] = true;
-            colHasQueen[col] = true;
-            mapQueens[row][col] = true;
-            if (backTracking(n, row, col+1)) {
+            colHasQueen[i] = true;
+            mapQueens[row][i] = true;
+            backTracking(n, row+1, 0, k+1);
+            rowHasQueen[row] = false;
+            colHasQueen[i] = false;
+            mapQueens[row][i] = false;
+        }
+    }
+
+    private boolean hypotenuseHasQueue(int row, int col, int n) {
+        // 左上
+        for (int i = row-1, j = col-1; i >=0 && j >=0; i--, j--) {
+            if (mapQueens[i][j]) {
                 return true;
             }
-            rowHasQueen[row] = false;
-            colHasQueen[col] = false;
-            mapQueens[row][col] = false;
-        } else {
-            return backTracking(n, row, col+1);
+        }
+        // 右上
+        for (int i = row-1, j = col+1; i >=0 && j < n; i--, j++) {
+
+            if (mapQueens[i][j]) {
+                return true;
+            }
         }
         return false;
+    }
+
+    // 参考答案
+    List<List<String>> res = new ArrayList<>();
+    public List<List<String>> solveNQueens(int n) {
+
+        char[][] board = new char[n][n]; // 定义棋盘大小，并初始化棋盘
+        for (char[] c : board) Arrays.fill(c, '.');
+
+        backtrack(n, board, 0);
+        return res;
+    }
+
+    // 是否可以在 board[row][col] 位置放置皇后
+    public boolean isValid(char[][] board, int row, int col, int n) {
+
+        // 检查列中是否有皇后互相冲突
+        for (int i=0;i<row;i++) {
+
+            if (board[i][col] == 'Q') return false;
+        }
+
+        // 检查右上方是否有皇后互相冲突
+        for (int i=row-1, j=col+1;i>=0 && j<n;i--, j++) {
+
+            if (board[i][j] == 'Q') return false;
+        }
+
+        // 检查左上方是否有皇后互相冲突
+        for (int i=row-1, j=col-1;i>=0 && j>=0;i--, j--) {
+
+            if (board[i][j] == 'Q') return false;
+        }
+        return true;
+    }
+
+    // 将 char[][] 中的每一行转换成 List 集合
+    public List<String> Array2List(char[][] board) {
+
+        List<String> list = new ArrayList<>();
+
+        for (char[] c : board) {
+
+            list.add(String.copyValueOf(c));
+        }
+        return list;
+    }
+
+    public void backtrack(int n, char[][] board, int row) {
+
+        if (row == n) {
+
+            res.add(Array2List(board));
+            return ;
+        }
+
+        for (int col=0;col<n;col++) {
+
+            if (!isValid(board, row, col, n)) continue; // 剪枝
+
+            board[row][col] = 'Q'; // 做选择
+
+            backtrack(n, board, row + 1);
+
+            board[row][col] = '.'; // 撤销选择
+        }
     }
 
 
