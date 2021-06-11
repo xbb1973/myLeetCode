@@ -4835,8 +4835,18 @@ class Solution {
 
     // 1. 爬楼梯
     // 70. Climbing Stairs (Easy)
+    // 定义一个数组 dp 存储上楼梯的方法数（为了方便讨论，数组下标从 1 开始），dp[i] 表示走到第 i 个楼梯的方法数目。
     public int climbStairs(int n) {
-
+        if (n <= 2) {
+            return n;
+        }
+        int pre2 = 1, pre1 = 2;
+        for (int i = 2; i < n; i++) {
+            int cur = pre1 + pre2;
+            pre2 = pre1;
+            pre1 = cur;
+        }
+        return pre1;
     }
 
 
