@@ -4849,7 +4849,187 @@ class Solution {
         return pre1;
     }
 
+    // dp 初始思路版本
+    public int climbStairs(int n) {
+        int[] dp = new int[n+1];
+        for (int i = 1; i <= n; i++) {
+            if (i == 1) {
+                dp[i] = 1;
+            } else if (i == 2) {
+                dp[i] = 2;
+            } else {
+                dp[i] = dp[i-1] + dp[i-2];
+            }
+        }
+        return dp[n];
+    }
 
+    // 优化空间版本
+    public int climbStairs(int n) {
+        int[] dp = new int[n+1];
+        int pre1 = 2;
+        int pre2 = 1;
+        // 可以再优化 if n <= 2 return n;
+        if (n == 1) {
+            return pre2;
+        } else if (n == 2) {
+            return pre1;
+        }
+        for (int i = 3; i <= n; i++) {
+            int tmp = pre1;
+            pre1 = tmp + pre2;
+            pre2 = tmp;
+        }
+        return pre1;
+    }
+
+
+    // 2. 强盗抢劫
+    public int rob(int[] nums) {
+        // dp[i] = max((dp[i-2] + nums[i]), dp[i-1]);
+        int length = nums.length;
+        int[] dp = new int[length];
+        if (length <=2) {
+            if (length == 1) {
+                return nums[0];
+            }
+            return Math.max(nums[0], nums[1]);
+        }
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < length; i++) {
+            dp[i] = Math.max((dp[i-2] + nums[i]), dp[i-1]);
+        }
+        return dp[length - 1];
+    }
+
+    // 优化空间
+    public int rob(int[] nums) {
+        int length = nums.length;
+        if (length <=2) {
+            if (length == 1) {
+                return nums[0];
+            }
+            return Math.max(nums[0], nums[1]);
+        }
+
+        int pre2 = nums[0];
+        int pre1 = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < length; i++) {
+            int temp = pre1;
+            pre1 = Math.max((pre2 + nums[i]), pre1);
+            pre2 = temp;
+        }
+        return pre1;
+    }
+
+
+    // 3. 强盗在环形街区抢劫
+    // return Math.max(rob(nums, 0, n - 2), rob(nums, 1, n - 1));
+    // 思路，将其分解为俩个数组求解
+    public int rob(int[] nums) {
+        // return Math.max(rob(nums, 0, n - 2), rob(nums, 1, n - 1));
+        // dp[i] = max((dp[i-2] + nums[i]), dp[i-1]);
+        int length = nums.length;
+
+        if (length <=2) {
+            if (length == 1) {
+                return nums[0];
+            }
+        }
+
+        int[] nums1 = Arrays.copyOfRange(nums, 0, length - 1);
+        int[] nums2 = Arrays.copyOfRange(nums, 1, length);
+        return Math.max(rob2(nums1), rob2(nums2));
+    }
+
+
+    public int rob2(int[] nums) {
+        int length = nums.length;
+        if (length <=2) {
+            if (length == 1) {
+                return nums[0];
+            }
+            return Math.max(nums[0], nums[1]);
+        }
+
+        int pre2 = nums[0];
+        int pre1 = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < length; i++) {
+            int temp = pre1;
+            pre1 = Math.max((pre2 + nums[i]), pre1);
+            pre2 = temp;
+        }
+        return pre1;
+    }
+
+
+    // 4. 信件错排
+    // 定义一个数组 dp 存储错误方式数量，dp[i] 表示前 i 个信和信封的错误方式数量。
+    // 假设第 i 个信装到第 j 个信封里面，而第 j 个信装到第 k 个信封里面。
+    // 根据 i 和 k 是否相等，有两种情况：
+    // i==k，交换 i 和 j 的信后，它们的信和信封在正确的位置，但是其余 i-2 封信有 dp[i-2] 种错误装信的方式。由于 j 有 i-1 种取值，因此共有 (i-1)*dp[i-2] 种错误装信方式。
+    // i != k，交换 i 和 j 的信后，第 i 个信和信封在正确的位置，其余 i-1 封信有 dp[i-1] 种错误装信方式。由于 j 有 i-1 种取值，因此共有 (i-1)*dp[i-1] 种错误装信方式。
+
+
+    // 5. 母牛生产
+    // 题目描述：假设农场中成熟的母牛每年都会生 1 头小母牛，并且永远不会死。
+    // 第一年有 1 只小母牛，从第二年开始，母牛开始生小母牛。
+    // 每只小母牛 3 年之后成熟又可以生小母牛。给定整数 N，求 N 年后牛的数量。
+    // 第 i 年成熟的牛的数量为：
+    // dp[i-3] i-3年成熟的牛数 == i年会新增的  增量
+    // dp[i-1] i-1年成熟的牛                 固有量
+    // dp[i] = dp[i-1] + dp[i-3];
+
+
+
+    // 矩阵路径
+    // 1. 矩阵的最小路径和
+    // 2. 矩阵的总路径数
+
+
+    // 数组区间
+    // 1. 数组区间和
+    // 2. 数组中等差递增子区间的个数
+
+
+    // 分割整数
+    // 1. 分割整数的最大乘积
+    // 2. 按平方数来分割整数
+    // 3. 分割整数构成字母字符串
+
+
+    // 最长递增子序列
+    // 1. 最长递增子序列
+    // 2. 一组整数对能够构成的最长链
+    // 3. 最长摆动子序列
+
+
+    // 最长公共子序列
+    // 1. 最长公共子序列
+
+
+    // 0-1 背包
+    // 1. 划分数组为和相等的两部分
+    // 2. 改变一组数的正负号使得它们的和为一给定数
+    // 3. 01 字符构成最多的字符串
+    // 4. 找零钱的最少硬币数
+    // 5. 找零钱的硬币数组合
+    // 6. 字符串按单词列表分割
+    // 7. 组合总和
+
+
+    // 股票交易
+    // 1. 需要冷却期的股票交易
+    // 2. 需要交易费用的股票交易
+    // 3. 只能进行两次的股票交易
+    // 4. 只能进行 k 次的股票交易
+
+
+    // 字符串编辑
+    // 1. 删除两个字符串的字符使它们相等
+    // 2. 编辑距离
+    // 3. 复制粘贴字符
 
 
     // =====================================================================================================================
