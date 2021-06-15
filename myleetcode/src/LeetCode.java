@@ -4987,15 +4987,164 @@ class Solution {
     // 1. 矩阵的最小路径和
     // 64. Minimum Path Sum (Medium)
     public int minPathSum(int[][] grid) {
+        // start 0,0
+        // end n-1, m-1
+        int n = grid.length;
+        int m = grid[0].length;
+        // dp[i][j]
+        int[][] dp = new int[n][m];
+        dp[0][0] = grid[0][0];
 
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (i == 0 && j==0) {
+                    continue;
+                }
+                if (i == 0) {
+                    dp[i][j] = dp[i][j-1] + grid[i][j];
+                }
+                if (j == 0) {
+                    dp[i][j] = dp[i-1][j] + grid[i][j];
+                }
+            }
+        }
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j < m; j++) {
+                dp[i][j] = Math.min((dp[i][j-1] + grid[i][j]), dp[i-1][j] + grid[i][j]);
+            }
+        }
+        return dp[n-1][m-1];
+    }
+
+    // 优化1 创建dp[l] 每走i步最小的路程 l = m+n
+    // 优化2 创建dp[n] 每走i列最小的路程
+    public int minPathSum(int[][] grid) {
+        // TODO means NO DO hahahah
     }
 
     // 2. 矩阵的总路径数
+    // 62. Unique Paths (Medium)
+    //  m x n 网格的左上角
+    public int uniquePaths(int m, int n) {
+        int[] dp = new int[n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0) {
+                    dp[j] = 1;
+                } else if (j == 0) {
+                    dp[j] = 1;
+                } else {
+                    dp[j] = dp[j] + dp[j-1];
+                }
+            }
+        }
+        return dp[n-1];
+    }
 
+
+    // 63. Unique Paths With Obstacles (Medium)
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m = obstacleGrid.length;
+        int n = obstacleGrid[0].length;
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (obstacleGrid[i][j] == 1) {
+                    dp[i][j] = 0;
+                    continue;
+                }
+
+                if (i == 0 && j == 0) {
+                    dp[i][j] = 1;
+                    continue;
+                } else if (i == 0 || j == 0) {
+                    if (i == 0) {
+                        dp[i][j] = dp[i][j-1];
+                        continue;
+                    }
+                    if (j == 0) {
+                        dp[i][j] = dp[i-1][j];
+                        continue;
+                    }
+                }
+                dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        }
+        return dp[m-1][n-1];
+    }
 
     // 数组区间
     // 1. 数组区间和
+    // 303. Range Sum Query - Immutable (Easy)
+    // 求区间 i ~ j 的和，可以转换为 sum[j + 1] - sum[i]，其中 sum[i] 为 0 ~ i - 1 的和。
+    int[] sum;
+    int[] nums2;
+    public NumArray(int[] nums) {
+        int n = nums.length;
+        sum = new int[n];
+        nums2 = nums;
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                sum[0] = nums[0];
+            } else {
+                sum[i] = sum[i-1] + nums[i];
+            }
+        }
+    }
+
+    public int sumRange(int left, int right) {
+        return sum[right] - sum[left] + nums2[left];
+    }
+
+    // 优化 么
+    int[] sum;
+    public NumArray(int[] nums) {
+        int n = nums.length;
+        sum = new int[n+1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i-1] + nums[i-1];
+        }
+    }
+
+    public int sumRange(int left, int right) {
+        return sum[right+1] - sum[left];
+    }
+
     // 2. 数组中等差递增子区间的个数
+    // 413. Arithmetic Slices (Medium)
+
+
+    // 这个回溯法没啥问题呀 啥情况呢
+    List<List<Integer>> ans = new ArrayList<>();
+    public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        for (int i = 3; i <= n; i++) {
+            backTracking(nums, i, new ArrayList<>(), 0);
+        }
+        return ans.size();
+    }
+
+    private void backTracking(int[] nums, int k, ArrayList<Integer> list, int start) {
+        if (list.size() == k) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = start; i < nums.length; i++) {
+            if (list.size() == 0 || list.size() == 1) {
+                list.add(nums[i]);
+                backTracking(nums, k, list, i+1);
+                list.remove(list.size() - 1);
+            } else {
+                int d = list.get(1) - list.get(0);
+                if (nums[i] - list.get(list.size()-1) == d) {
+                    list.add(nums[i]);
+                    backTracking(nums, k, list, i+1);
+                    list.remove(list.size() - 1);
+                }
+            }
+        }
+    }
 
 
     // 分割整数
