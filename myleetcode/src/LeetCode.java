@@ -5149,41 +5149,110 @@ class Solution {
 
     // 分割整数
     // 1. 分割整数的最大乘积
+    // 343. Integer Break (Medim)
+    // 给定一个正整数 n，将其拆分为至少两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
+    //
+    // 示例 1:
+    //
+    // 输入: 2
+    // 输出: 1
+    // 解释: 2 = 1 + 1, 1 × 1 = 1。
+    // 算法流程：
+    // 当 n \leq 3n≤3 时，按照规则应不拆分，但由于题目要求必须拆分，因此必须拆出一个因子 11 ，即返回 n - 1n−1 。
+    // 当 n>3n>3 时，求 nn 除以 33 的 整数部分 aa 和 余数部分 bb （即 n = 3a + bn=3a+b ），并分为以下三种情况：
+    // 当 b = 0 b=0 时，直接返回 3^a3
+    // 当 b = 1 b=1 时，要将一个 1 + 31+3 转换为 2+22+2，因此返回 3^{a-1} \times 43
+    // 当 b = 2 b=2 时，返回 3^a \times 23
+    //  ×
+    public int integerBreak(int n) {
+        if(n <= 3) return n - 1;
+        int a = n / 3, b = n % 3;
+        if(b == 0) return (int)Math.pow(3, a);
+        if(b == 1) return (int)Math.pow(3, a - 1) * 4;
+        return (int)Math.pow(3, a) * 2;
+    }
+
     // 2. 按平方数来分割整数
+    // 279. Perfect Squares(Medium)
+
+
     // 3. 分割整数构成字母字符串
+    // 91. Decode Ways (Medium)
 
 
     // 最长递增子序列
     // 1. 最长递增子序列
-    // 2. 一组整数对能够构成的最长链
-    // 3. 最长摆动子序列
+    // 300. Longest Increasing Subsequence (Medium)
 
+
+
+    // 2. 一组整数对能够构成的最长链
+    // 646. Maximum Length of Pair Chain (Medium)
+
+
+    // 3. 最长摆动子序列
+    // 376. Wiggle Subsequence (Medium)
 
     // 最长公共子序列
     // 1. 最长公共子序列
-
+    // 1143. Longest Common Subsequence
 
     // 0-1 背包
     // 1. 划分数组为和相等的两部分
+    // 416. Partition Equal Subset Sum (Medium)
+
     // 2. 改变一组数的正负号使得它们的和为一给定数
+    // 494. Target Sum (Medium)
+
+
     // 3. 01 字符构成最多的字符串
+    // 474. Ones and Zeroes (Medium)
+
+
     // 4. 找零钱的最少硬币数
+    // 322. Coin Change (Medium)
+
+
     // 5. 找零钱的硬币数组合
+    // 518. Coin Change 2 (Medium)
+
+
     // 6. 字符串按单词列表分割
+    // 139. Word Break (Medium)
+
+
     // 7. 组合总和
+    // 377. Combination Sum IV (Medium)
+
 
 
     // 股票交易
     // 1. 需要冷却期的股票交易
+    // 309. Best Time to Buy and Sell Stock with Cooldown(Medium)
+
     // 2. 需要交易费用的股票交易
+    // 714. Best Time to Buy and Sell Stock with Transaction Fee (Medium)
+
+
     // 3. 只能进行两次的股票交易
+    // 123. Best Time to Buy and Sell Stock III (Hard)
+
+
     // 4. 只能进行 k 次的股票交易
+    // 188. Best Time to Buy and Sell Stock IV (Hard)
 
 
     // 字符串编辑
     // 1. 删除两个字符串的字符使它们相等
+    // 583. Delete Operation for Two Strings (Medium)
+
     // 2. 编辑距离
+    // 72. Edit Distance (Hard)
+
+
     // 3. 复制粘贴字符
+    // 650. 2 Keys Keyboard (Medium)
+
 
 
     // =====================================================================================================================
