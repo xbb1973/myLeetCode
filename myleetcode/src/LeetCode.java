@@ -3413,6 +3413,8 @@ class Solution {
     // 可以将每个整数看成图中的一个节点，如果两个整数之差为一个平方数，那么这两个整数所在的节点就有一条边。
     // 要求解最小的平方数数量，就是求解从节点 n 到节点 0 的最短路径。
     // 本题也可以用动态规划求解，在之后动态规划部分中会再次出现。
+
+    // 此方案超时～～～～～～～～
     public int numSquares(int n) {
         List<Integer> squares = generateSquares(n);
         Queue<Integer> queue = new LinkedList<>();
@@ -5174,10 +5176,90 @@ class Solution {
 
     // 2. 按平方数来分割整数
     // 279. Perfect Squares(Medium)
+    public int numSquares(int n) {
+        int[] f = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            int minn = Integer.MAX_VALUE;
+            for (int j = 1; j * j <= i; j++) {
+                minn = Math.min(minn, f[i - j * j]);
+            }
+            f[i] = minn + 1;
+        }
+        return f[n];
+    }
+
+    // 贪心
+    // 这样的贪心无法成功
+    // 12 = 4 + 4 + 4   贪心结果 12 = 9 + 1 + 1 + 1
+    public int numSquares(int n) {
+        int ans = 0;
+        int begin = n;
+        for (int i = begin; i > 0; i--) {
+            if (n==0) {
+                break;
+            }
+            if (!isSquare(i)) {
+                continue;
+            }
+            if (n-i<0) {
+                continue;
+            }
+            System.out.println(i);
+            n = n - i;
+            i++;
+            ans++;
+        }
+
+        return ans;
+    }
+
+    public boolean isSquare(int n) {
+        int y = (int) Math.sqrt(n);
+        return y*y==n;
+    }
+
+
+    // 数学法
+    public int numSquares(int n) {
+        if (isPerfectSquare(n)) {
+            return 1;
+        }
+        if (checkAnswer4(n)) {
+            return 4;
+        }
+        for (int i = 1; i * i <= n; i++) {
+            int j = n - i * i;
+            if (isPerfectSquare(j)) {
+                return 2;
+            }
+        }
+        return 3;
+    }
+
+    // 判断是否为完全平方数
+    public boolean isPerfectSquare(int x) {
+        int y = (int) Math.sqrt(x);
+        return y * y == x;
+    }
+
+    // 判断是否能表示为 4^k*(8m+7) = x
+    // if true 则 至多为4个正整数的平方和   if false 则 至多为3个正整数的平方和
+    public boolean checkAnswer4(int x) {
+        // 消除 4^k
+        while (x % 4 == 0) {
+            x /= 4;
+        }
+        // 消除8m
+        return x % 8 == 7;
+    }
 
 
     // 3. 分割整数构成字母字符串
     // 91. Decode Ways (Medium)
+    // 左神视频 学习
+    public int numDecodings(String s) {
+
+    }
 
 
     // 最长递增子序列
