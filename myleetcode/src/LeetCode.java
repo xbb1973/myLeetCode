@@ -5256,24 +5256,152 @@ class Solution {
 
     // 3. 分割整数构成字母字符串
     // 91. Decode Ways (Medium)
-    // 左神视频 学习
+    //'A' -> 1
+    //'B' -> 2
+    //...
+    //'Z' -> 26
+    // 失之毫厘 差之千里
     public int numDecodings(String s) {
-
+        int n = s.length();
+        int[] dp = new int[n+1];
+        if (n == 0 || s.charAt(0) == '0') {
+            return 0;
+        }
+        dp[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            if (s.charAt(i-1) != '0') {
+                dp[i] += dp[i-1];
+            }
+            if (i > 1 && s.charAt(i-2) != '0' && Integer.parseInt(s.substring(i-2, i)) <= 26) {
+                dp[i] += dp[i-2];
+            }
+        }
+        return dp[n];
     }
 
+
+    // 为什么这个方法不work
+    // 因为实际上这里有个特殊的dp[1]case所以需要一个额外的判断
+    // 而上面的方法创造了一个相当于是dp[-1] 归纳了这个特殊的case
+    public int numDecodings(String s) {
+        int n = s.length();
+        int[] dp = new int[n];
+        if (n == 0) {
+            return 0;
+        }
+        if (s.charAt(0) == '0') {
+            return 0;
+        }
+        dp[0] = 1;
+
+
+        // if (n > 1) {
+        //     if (Integer.parseInt(s.substring(0, 2)) <= 26) {
+        //         // 可以用两个数
+        //         if (s.charAt(1) != '0') {
+        //             dp[1] = 2;
+        //         } else {
+        //             dp[1] = 1;
+        //         }
+        //     } else {
+        //         // 只能用一个数
+        //         if (s.charAt(1) != '0') {
+        //             dp[1] = 1;
+        //         } else {
+        //             dp[1] = 0;
+        //         }
+        //     }
+        // }
+
+
+        for (int i = 1; i < n; i++) {
+            if (s.charAt(i) != '0') {
+                dp[i] += dp[i-1];
+            }
+            if (s.charAt(i-1) != '0' && Integer.parseInt(s.substring(i-1, i+1)) <= 26) {
+                if (i==1) {
+                    // or set dp[n+1] and dp[0] to 1 will fix this if.. but seems meaning less.
+                    dp[i] += 1;
+                } else {
+                    dp[i] += dp[i-2];
+                }
+            }
+        }
+        return dp[n-1];
+    }
 
     // 最长递增子序列
     // 1. 最长递增子序列
     // 300. Longest Increasing Subsequence (Medium)
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[j], dp[i]) + 1;
+                }
+            }
+
+        }
+        int max = 0;
+        for (int i : dp) {
+            max = Math.max(i, max);
+        }
+        return max;
+    }
+
+    // 方法二：贪心 + 二分查找
+    // 思路与算法
+    // 考虑一个简单的贪心，如果我们要使上升子序列尽可能的长，则我们需要让序列上升得尽可能慢，
+    // 因此我们希望每次在上升子序列最后加上的那个数尽可能的小。
+    // 基于上面的贪心思路，我们维护一个数组 d[i]d[i] ，表示长度为 ii 的最长上升子序列的末尾元素的最小值，
+    // 用 \textit{len}len 记录目前最长上升子序列的长度，
+    // 起始时 lenlen 为 11，d[1] = \textit{nums}[0]d[1]=nums[0]。
 
 
 
     // 2. 一组整数对能够构成的最长链
     // 646. Maximum Length of Pair Chain (Medium)
+    public int findLongestChain(int[][] pairs) {
+        if (pairs == null || pairs.length == 0) {
+            return 0;
+        }
+        int[] dp = new int[pairs.length];
+        Arrays.fill(dp, 1);
+        int ans = 0;
+        Arrays.sort(pairs, (a, b) -> (a[0] - b[0]));
+        for (int i = 0; i < pairs.length; i++) {
+            for (int j = i+1; j < pairs.length; j++) {
+                if (pairs[j][0] > pairs[i][1]) {
+                    dp[j] = Math.max(dp[j], dp[i] + 1);
+                }
+            }
 
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+
+    // 使用贪心思想扩展数对链，在所有可作为下一个数对的集合中选择第二个数最小的数对添加到数对链。
+    public int findLongestChain(int[][] pairs) {
+        Arrays.sort(pairs, (a, b) -> a[1] - b[1]);
+        int cur = Integer.MIN_VALUE, ans = 0;
+        for (int[] pair: pairs) {
+            if (cur < pair[0]) {
+                cur = pair[1];
+                ans++;
+            }
+        }
+        return ans;
+    }
 
     // 3. 最长摆动子序列
     // 376. Wiggle Subsequence (Medium)
+    // 这题是medium ???
+    public int wiggleMaxLength(int[] nums) {
+
+    }
 
     // 最长公共子序列
     // 1. 最长公共子序列
