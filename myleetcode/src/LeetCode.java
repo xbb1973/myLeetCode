@@ -5467,4 +5467,113 @@ class Solution {
 
     // =====================================================================================================================
     // Another days for coding 6/8 of 2021..
+    // LeetCode41 in - place
+    // in-place并不是一个算法，而是一种思想。题目当中规定只能使用常数的存储空间，意味着我们不能额外开辟数组或者其他容器来存储数据。
+    // 它出现的原因也非常简单，因为我们申请数组等容器的时候需要通过操作系统向内存申请连续的内存，
+    // 这会涉及到一系列内存管理算法的执行，所以是需要消耗大量时间的。所以在一些高性能的场景下，我们会希望尽量避免空间申请操作。
+    //
+    //
+    public int firstMissingPositive(int[] nums) {
+        Arrays.sort(nums);
+        if (nums[nums.length-1] <= 0) {
+            return 1;
+        }
+        if (nums[0] > 1) {
+            return 1;
+        }
+        int mark = 1;
+        for (int num : nums) {
+            if (num == mark) {
+                mark++;
+            }
+        }
+        return mark;
+    }
+
+    public int firstMissingPositive(int[] nums) {
+        Set<Integer> container = new HashSet<>();
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        for (int num : nums) {
+            container.add(num);
+            max = Math.max(max, num);
+            min = Math.min(min, num);
+        }
+        if (min > 1) {
+            return 1;
+        }
+        if (max <= 0) {
+            return 1;
+        }
+        for (int i = 1; i <= max; i++) {
+            if (container.contains(i)) {
+                continue;
+            } else {
+                return i;
+            }
+        }
+        return max+1;
+    }
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+        boolean[] newNums = new boolean[n+2];
+        for (int num : nums) {
+            if (num >= 0 && num <= n+1){
+                newNums[num] = true;
+            }
+        }
+        for (int i = 0; i < newNums.length; i++) {
+            if (!newNums[i] && i!=0) {
+                return i;
+            }
+        }
+        return 1;
+    }
+
+    public int firstMissingPositive(int[] nums) {
+
+        int tmp1;
+        int tmp2;
+        int n = nums.length;
+        boolean hasN = false;
+        for (int i = 0; i < n; i++) {
+            if (i == nums[i]) {
+                continue;
+            }
+            if (nums[i] > n || nums[i] < 0) {
+                nums[i] = -1;
+            } else if (nums[i] == n) {
+                nums[i] = -1;
+                hasN = true;
+            } else {
+                tmp1 = nums[i];
+                tmp2 = nums[tmp1];
+                if (tmp1 == tmp2) {
+                    nums[i] = -1;
+                    continue;
+                }
+                nums[tmp1] = tmp1;
+                nums[i] = tmp2;
+                i--;
+            }
+        }
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] != i) {
+                return i;
+            }
+        }
+        return hasN?n+1:n;
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
