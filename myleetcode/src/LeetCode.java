@@ -5406,10 +5406,91 @@ class Solution {
     // 最长公共子序列
     // 1. 最长公共子序列
     // 1143. Longest Common Subsequence
+    // 最长公共子序列问题是典型的二维动态规划问题。
+    public int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length();
+        int n = text2.length();
+        int[][] dp = new int[m+1][n+1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c1 = text1.charAt(i);
+                char c2 = text2.charAt(j);
+                if (c1 == c2) {
+                    dp[i+1][j+1] = dp[i][j] + 1;
+                } else {
+                    dp[i+1][j+1] = Math.max(dp[i+1][j], dp[i][j+1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
 
     // 0-1 背包
     // 1. 划分数组为和相等的两部分
     // 416. Partition Equal Subset Sum (Medium)
+    public boolean canPartition(int[] nums) {
+        // 转化为0-1背包
+        // w <= n-1
+        // max = target = total/2
+        Arrays.sort(nums);
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        int n = nums.length;
+        if (nums.length <= 1 || sum % 2 == 1) {
+            return false;
+        }
+        int target = sum / 2;
+        // 二维数组：状态定义:dp[i][j]表示从0-i个物品中选择不超过j重量的物品的最大价值
+        // boolean[][] dp = new boolean[n][target+1];
+        // w <= n-1
+        // max = target = total/2
+        // 行从0~n-1 取到的最大值0~target
+        int[][] dp = new int[n][target+1];
+
+        // 初始化第0行，第0列默认为0
+        for (int i = 0; i < target + 1; i++) {
+            dp[0][i] =
+        }
+        // weight数组的大小 就是物品个数
+        for (int i = 0; i < n; i++) {
+
+        }
+
+        // 0-1背包问题母代码(二维)
+        void bags()
+        {
+            vector<int> weight = {1, 3, 4};   //各个物品的重量
+            vector<int> value = {15, 20, 30}; //对应的价值
+            int bagWeight = 4;                //背包最大能放下多少重的物品
+
+            // 二维数组：状态定义:dp[i][j]表示从0-i个物品中选择不超过j重量的物品的最大价值
+            vector<vector<int>> dp(weight.size() + 1, vector<int>(bagWeight + 1, 0));
+
+            // 初始化:第一列都是0，第一行表示只选取0号物品最大价值
+            for (int j = bagWeight; j >= weight[0]; j--)
+                dp[0][j] = dp[0][j - weight[0]] + value[0];
+
+            // weight数组的大小 就是物品个数
+            for (int i = 1; i < weight.size(); i++) // 遍历物品(第0个物品已经初始化)
+            {
+                for (int j = 0; j <= bagWeight; j++) // 遍历背包容量
+                {
+                    if (j < weight[i])           //背包容量已经不足以拿第i个物品了
+                        dp[i][j] = dp[i - 1][j]; //最大价值就是拿第i-1个物品的最大价值
+                        //背包容量足够拿第i个物品,可拿可不拿：拿了最大价值是前i-1个物品扣除第i个物品的 重量的最大价值加上i个物品的价值
+                        //不拿就是前i-1个物品的最大价值,两者进行比较取较大的
+                    else
+                        dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+                }
+            }
+            cout << dp[weight.size() - 1][bagWeight] << endl;
+        }
+
+
+        return false;
+    }
 
     // 2. 改变一组数的正负号使得它们的和为一给定数
     // 494. Target Sum (Medium)
