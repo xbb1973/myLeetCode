@@ -5469,6 +5469,8 @@ class Solution {
         }
         return dp[n-1][target];
     }
+
+    // 最优
     public boolean canPartition(int[] nums) {
         // 转化为0-1背包
         // w <= n-1
@@ -5490,19 +5492,12 @@ class Solution {
         // 行从0~n-1 取到的最大值0~target
         boolean[] dp = new boolean[target+1];
         // 初始化??  不需要也能pass
-
+        dp[0] = true;
         // key loop
-        for (int i = 1; i < n; i++) {
-            for (int j = target; j >= 0; j--) {
-                if (dp[target]) {
-                    return true;
-                }
-                if (j == nums[i]) {
-                    dp[j] = true;
-                } else if (j > nums[i]) {
-                    // j - nums[i] 取的是上一次的，因此需要倒序
-                    dp[j] = dp[j] || dp[j - nums[i]];
-                }
+        // 第一层从0开始，第二层逆序
+        for (int i = 0; i < n; i++) {
+            for (int j = target; j >= nums[i]; j--) {
+                dp[j] = dp[j] || dp[j - nums[i]];
             }
         }
         return dp[target];
@@ -5510,12 +5505,102 @@ class Solution {
 
     // 2. 改变一组数的正负号使得它们的和为一给定数
     // 494. Target Sum (Medium)
+    // 该问题可以转换为 Subset Sum 问题，从而使用 0-1 背包的方法来求解。
+    // 可以将这组数看成两部分，P 和 N，其中 P 使用正号，N 使用负号，有以下推导：
+    //                   sum(P) - sum(N) = target
+    // sum(P) + sum(N) + sum(P) - sum(N) = target + sum(P) + sum(N)
+    //                        2 * sum(P) = target + sum(nums)
+    // 因此只要找到一个子集，令它们都取正号，并且和等于 (target + sum(nums))/2，就证明存在解。
     public int findTargetSumWays(int[] nums, int target) {
+        int n = nums.length;
+        if (n == 1) {
+            if (nums[0] == target || nums[0] == -target) {
+                return 1;
+            }
+            return 0;
+        }
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+        }
+        int realTarget = (target + sum);
+        if (realTarget % 2 == 1) {
+            return 0;
+        }
+        realTarget = realTarget / 2;
+        int[] dp = new int[realTarget+1];
 
+        // 初始化的意义
+        // for (int i = 0; i < n; i++) {
+        //     dp[0][nums[i]] = 1;
+        // }
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = realTarget; j >= nums[i]; j--) {
+                dp[j] = dp[j] + dp[j - nums[i]];
+            }
+        }
+        return dp[realTarget];
     }
+
+
+
+    // DFS 回溯解法
+    List<List<Integer>> ans = new ArrayList<>();
+    public int findTargetSumWays(int[] nums, int target) {
+        int n = nums.length;
+        boolean containsZero = false;
+        if (n == 1) {
+            if (nums[0] == target || nums[0] == -target) {
+                return 1;
+            }
+            return 0;
+        }
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (nums[i] == 0) {
+                containsZero = true;
+            }
+        }
+        int realTarget = (target + sum);
+        if (realTarget % 2 == 1) {
+            return 0;
+        }
+        target = realTarget / 2;
+
+        dfs(nums, target, 0, new ArrayList<>(), new boolean[n], containsZero);
+
+        // System.out.println(ans.toString());
+        return ans.size();
+    }
+
+    public void dfs(int[] nums, int target, int start, List<Integer> list, boolean visited[], boolean containsZero) {
+        if (target == 0) {
+            ans.add(new ArrayList<>(list));
+            if (containsZero) {
+
+            } else {
+                return;
+            }
+        }
+        for (int i = start; i < nums.length; i++) {
+            int num = nums[i];
+            if (target >= num && !visited[i]) {
+                list.add(num);
+                visited[i] = true;
+                // 新的开始需要用i + 1， 之前写错了导致有重复case
+                dfs(nums, target-num, i+1, list, visited, containsZero);
+                list.remove(list.get(list.size()-1));
+                visited[i] = false;
+            }
+        }
+    }
+
 
     // 3. 01 字符构成最多的字符串
     // 474. Ones and Zeroes (Medium)
+
 
 
     // 4. 找零钱的最少硬币数
