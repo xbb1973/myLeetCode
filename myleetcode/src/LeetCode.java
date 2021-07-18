@@ -5600,7 +5600,89 @@ class Solution {
 
     // 3. 01 字符构成最多的字符串
     // 474. Ones and Zeroes (Medium)
+    // 代表考虑前 k 件物品，在数字 1 容量不超过 i i，数字 0 容量不超过 j j 的条件下的「最大价值」（每个字符串的价值均为 1）。
+    public int findMaxForm(String[] strs, int m, int n) {
 
+        int len = strs.length;
+        // 预处理每一个字符包含 0 和 1 的数量
+        int[][] cnt = new int[len][2];
+        for (int i = 0; i < len; i++) {
+            String str = strs[i];
+            int zero = 0, one = 0;
+            for (char c : str.toCharArray()) {
+                if (c == '0') {
+                    zero++;
+                } else {
+                    one++;
+                }
+            }
+            cnt[i] = new int[]{zero, one};
+        }
+
+        int[][][] dp = new int[len][m+1][n+1];
+        for (int j = 0; j <= m; j++) {
+            for (int k = 0; k <= n; k++) {
+                if (cnt[0][0] <= j && cnt[0][1] <= k) {
+                    dp[0][j][k] = 1;
+                }
+            }
+        }
+        for (int i = 1; i < len; i++) {
+            for (int j = 0; j <= m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    int zeros = cnt[i][0];
+                    int ones = cnt[i][1];
+                    dp[i][j][k] = dp[i-1][j][k];
+                    if (zeros <= j && ones <= k) {
+                        dp[i][j][k] = Math.max(dp[i-1][j][k], dp[i-1][j-zeros][k-ones] + 1);
+                    }
+                }
+            }
+        }
+        return dp[len-1][m][n];
+    }
+
+
+    public int findMaxForm(String[] strs, int m, int n) {
+        int len = strs.length;
+        // 预处理每一个字符包含 0 和 1 的数量
+        int[][] cnt = new int[len][2];
+        for (int i = 0; i < len; i++) {
+            String str = strs[i];
+            int zero = 0, one = 0;
+            for (char c : str.toCharArray()) {
+                if (c == '0') {
+                    zero++;
+                } else {
+                    one++;
+                }
+            }
+            cnt[i] = new int[]{zero, one};
+        }
+
+        // 处理只考虑第一件物品的情况
+        int[][][] f = new int[len][m + 1][n + 1];
+        for (int i = 0; i <= m; i++) {
+            for (int j = 0; j <= n; j++) {
+                f[0][i][j] = (i >= cnt[0][0] && j >= cnt[0][1]) ? 1 : 0;
+            }
+        }
+
+        // 处理考虑其余物品的情况
+        for (int k = 1; k < len; k++) {
+            int zero = cnt[k][0], one = cnt[k][1];
+            for (int i = 0; i <= m; i++) {
+                for (int j = 0; j <= n; j++) {
+                    // 不选择第 k 件物品
+                    int a = f[k-1][i][j];
+                    // 选择第 k 件物品（前提是有足够的 m 和 n 额度可使用）
+                    int b = (i >= zero && j >= one) ? f[k-1][i-zero][j-one] + 1 : 0;
+                    f[k][i][j] = Math.max(a, b);
+                }
+            }
+        }
+        return f[len-1][m][n];
+    }
 
 
     // 4. 找零钱的最少硬币数
